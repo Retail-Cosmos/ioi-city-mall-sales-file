@@ -1,17 +1,22 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "retail-cosmos/ioi-city-mall-sales-file",
+    "description": "The IOI City Mall Data Generator is a Laravel package that simplifies the creation of daily sales data files for IOI City Mall stores. It seamlessly integrates into Laravel projects, streamlining data generation for retail management.",
     "keywords": [
-        ":vendor_name",
+        "Retail-Cosmos",
         "laravel",
-        ":package_slug"
+        "ioi-city-mall-sales-file"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/retail-cosmos/ioi-city-mall-sales-file",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Gaurav Makhecha",
+            "email": "gauravmakhecha@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Harshvardhan Sharma",
+            "email": "hvsharma63@gmail.com",
             "role": "Developer"
         }
     ],
@@ -35,19 +40,19 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "RetailCosmos\\IoiCityMallSalesFile\\": "src/",
+            "RetailCosmos\\IoiCityMallSalesFile\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "RetailCosmos\\IoiCityMallSalesFile\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
     "scripts": {
         "post-autoload-dump": "@composer run prepare",
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "clear": "@php vendor/bin/testbench package:purge-ioi-city-mall-sales-file --ansi",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
         "build": [
             "@composer run prepare",
@@ -73,10 +78,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "RetailCosmos\\IoiCityMallSalesFile\\IoiCityMallSalesFileServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "IoiCityMallSalesFile": "RetailCosmos\\IoiCityMallSalesFile\\Facades\\IoiCityMallSalesFile"
             }
         }
     },

@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace RetailCosmos\IoiCityMallSalesFile\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class IoiCityMallSalesFileCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'ioi-city-mall-sales-file';
 
     public $description = 'My command';
 
