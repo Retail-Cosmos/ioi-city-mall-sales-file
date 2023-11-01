@@ -24,7 +24,6 @@ class SalesFileGenerationCommand extends Command
     /**
      * Execute the console command.
      */
-
     protected $salesDataService;
 
     public function __construct(SalesDataInterface $salesDataService)
@@ -33,12 +32,11 @@ class SalesFileGenerationCommand extends Command
         $this->salesDataService = $salesDataService;
     }
 
-
     public function handle()
     {
         $date = $this->argument('date') ?? now()->subDay()->toDateString();
 
-        $salesData = $this->salesDataService->handle("d", "d");
+        $salesData = $this->salesDataService->handle('d', 'd');
         // able to access the data from project's service's method here.
 
         $this->comment('Sales files generated successfully.');
