@@ -2,6 +2,8 @@
 
 namespace RetailCosmos\IoiCityMallSalesFile\Commands;
 
+use App\Services\IOICityMallSalesDataService;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class SalesFileGenerationCommand extends Command
@@ -11,7 +13,7 @@ class SalesFileGenerationCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'generate:ioi-city-mall-sales-files {date?}';
+    protected $signature = 'generate:ioi-city-mall-sales-files {date?} {--identifier=}';
 
     /**
      * The console command description.
@@ -25,17 +27,64 @@ class SalesFileGenerationCommand extends Command
      */
     protected $salesDataService;
 
-    public function __construct()
+    /**
+     * For the time being, we will be directly accessing the SalesDataService from the project. We've instructed in the readme file, to store the service in a specific path.
+     *
+     * @TODO Dynamic Implementation to be done.
+     */
+    public function __construct(IOICityMallSalesDataService $salesDataService)
     {
         parent::__construct();
+        $this->salesDataService = $salesDataService;
     }
 
     public function handle()
     {
         $date = $this->argument('date') ?? now()->subDay()->toDateString();
 
+        $identifier = $this->option('identifier');
+
+        $config = config('ioi-city-mall-sales-file');
+
+        $this->validateConfigFile($config);
+
+        $stores = $identifier ? collect($config['stores'])->where('identifier', $identifier) : collect($config['stores']);
+
+        if ($stores->isEmpty()) {
+            $this->error('No stores found with the identifier '.$identifier);
+            exit;
+        }
+
         $this->comment('Sales files generated successfully.');
 
         return 0;
+    }
+
+    private function validateConfigFile($config)
+    {
+        if (! isset($config) || empty($config)) {
+            $this->error('The configuration file is either missing or empty. Please ensure it is properly configured.');
+            exit;
+        }
+
+        if (! isset($config['stores']) || empty($config['stores'])) {
+            $this->error('The stores array in configuration file is either missing or empty. Please ensure it is properly configured.');
+            exit;
+        }
+
+        if (! isset($config['first_file_generation_date']) || ! strtotime($config['first_file_generation_date'])) {
+            $this->error('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
+            exit;
+        }
+
+        try {
+            $firstFileDate = Carbon::createFromFormat('Y-m-d', $config['first_file_generation_date']);
+            if ($firstFileDate->format('Y-m-d') !== $config['first_file_generation_date']) {
+                throw new \Exception();
+            }
+        } catch (\Throwable $th) {
+            $this->error('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
+            exit;
+        }
     }
 }
