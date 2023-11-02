@@ -3,7 +3,6 @@
 namespace RetailCosmos\IoiCityMallSalesFile\Commands;
 
 use Illuminate\Console\Command;
-use RetailCosmos\IoiCityMallSalesFile\Interfaces\SalesDataInterface;
 
 class SalesFileGenerationCommand extends Command
 {
@@ -26,18 +25,14 @@ class SalesFileGenerationCommand extends Command
      */
     protected $salesDataService;
 
-    public function __construct(SalesDataInterface $salesDataService)
+    public function __construct()
     {
         parent::__construct();
-        $this->salesDataService = $salesDataService;
     }
 
     public function handle()
     {
         $date = $this->argument('date') ?? now()->subDay()->toDateString();
-
-        $salesData = $this->salesDataService->handle('d', 'd');
-        // able to access the data from project's service's method here.
 
         $this->comment('Sales files generated successfully.');
 
