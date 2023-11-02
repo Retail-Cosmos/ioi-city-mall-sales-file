@@ -1,6 +1,6 @@
 {
     "name": "retail-cosmos/ioi-city-mall-sales-file",
-    "description": "The IOI City Mall Data Generator is a Laravel package that simplifies the creation of daily sales data files for IOI City Mall stores. It seamlessly integrates into Laravel projects, streamlining data generation for retail management.",
+    "description": "The IOI City Mall Sales File Generator is a Laravel package that simplifies the creation of daily sales data files for IOI City Mall stores. It seamlessly integrates into Laravel projects, streamlining data generation for retail management.",
     "keywords": [
         "Retail-Cosmos",
         "laravel",
@@ -21,7 +21,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "spatie/laravel-package-tools": "^1.14.0",
         "illuminate/contracts": "^10.0"
     },
@@ -41,13 +41,11 @@
     "autoload": {
         "psr-4": {
             "RetailCosmos\\IoiCityMallSalesFile\\": "src/",
-            "RetailCosmos\\IoiCityMallSalesFile\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "RetailCosmos\\IoiCityMallSalesFile\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/"
+            "RetailCosmos\\IoiCityMallSalesFile\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -79,10 +77,7 @@
         "laravel": {
             "providers": [
                 "RetailCosmos\\IoiCityMallSalesFile\\IoiCityMallSalesFileServiceProvider"
-            ],
-            "aliases": {
-                "IoiCityMallSalesFile": "RetailCosmos\\IoiCityMallSalesFile\\Facades\\IoiCityMallSalesFile"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",

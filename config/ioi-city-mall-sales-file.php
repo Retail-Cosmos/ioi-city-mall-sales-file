@@ -89,7 +89,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | This setting is used to calculate the Batch ID for generated files. It specifies
-    | the first date to start counting from for Batch ID calculation.
+    | the first date to start counting from for the Batch ID calculation.
     |
     */
     'first_file_generation_date' => '',
