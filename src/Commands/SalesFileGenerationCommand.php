@@ -2,7 +2,6 @@
 
 namespace RetailCosmos\IoiCityMallSalesFile\Commands;
 
-use App\Services\IOICityMallSalesDataService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -25,19 +24,6 @@ class SalesFileGenerationCommand extends Command
     /**
      * Execute the console command.
      */
-    protected $salesDataService;
-
-    /**
-     * For the time being, we will be directly accessing the SalesDataService from the project. We've instructed in the readme file, to store the service in a specific path.
-     *
-     * @TODO Dynamic Implementation to be done.
-     */
-    public function __construct(IOICityMallSalesDataService $salesDataService)
-    {
-        parent::__construct();
-        $this->salesDataService = $salesDataService;
-    }
-
     public function handle()
     {
         $date = $this->argument('date') ?? now()->subDay()->toDateString();
