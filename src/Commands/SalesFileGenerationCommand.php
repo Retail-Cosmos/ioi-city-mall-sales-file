@@ -23,8 +23,6 @@ class SalesFileGenerationCommand extends Command
     /**
      * Execute the console command.
      */
-    protected $salesDataService;
-
     public function __construct()
     {
         parent::__construct();
