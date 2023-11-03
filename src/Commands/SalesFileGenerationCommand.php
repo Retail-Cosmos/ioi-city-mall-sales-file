@@ -51,7 +51,7 @@ class SalesFileGenerationCommand extends Command
         $stores = $identifier ? collect($config['stores'])->where('identifier', $identifier) : collect($config['stores']);
 
         if ($stores->isEmpty()) {
-            $this->error('No stores found with the identifier ' . $identifier);
+            $this->error('No stores found with the identifier '.$identifier);
             exit;
         }
 
@@ -62,17 +62,17 @@ class SalesFileGenerationCommand extends Command
 
     private function validateConfigFile($config)
     {
-        if (!isset($config) || empty($config)) {
+        if (! isset($config) || empty($config)) {
             $this->error('The configuration file is either missing or empty. Please ensure it is properly configured.');
             exit;
         }
 
-        if (!isset($config['stores']) || empty($config['stores'])) {
+        if (! isset($config['stores']) || empty($config['stores'])) {
             $this->error('The stores array in configuration file is either missing or empty. Please ensure it is properly configured.');
             exit;
         }
 
-        if (!isset($config['first_file_generation_date']) || !strtotime($config['first_file_generation_date'])) {
+        if (! isset($config['first_file_generation_date']) || ! strtotime($config['first_file_generation_date'])) {
             $this->error('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
             exit;
         }
