@@ -11,4 +11,4 @@ parameters:
     checkModelProperties: true
     checkMissingIterableValueType: false
     excludePaths:
-        - src/Commands/*.php
+        - src/Commands/SalesFileGenerationCommand.php
