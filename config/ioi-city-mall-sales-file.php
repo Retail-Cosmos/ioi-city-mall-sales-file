@@ -9,6 +9,7 @@ return [
     |
     | Define store-specific settings here. Each store should have an entry
     | containing the store identifier, machine ID, and SST registration status.
+    | * Note: 'identifier' and 'machine_id' must be unique across multiple store configs.
     |
     */
     'stores' => [
