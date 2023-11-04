@@ -2,8 +2,10 @@
 
 namespace RetailCosmos\IoiCityMallSalesFile\Commands;
 
+use App\Services\IOICityMallSalesDataService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileService;
 
 class SalesFileGenerationCommand extends Command
 {
@@ -21,10 +23,18 @@ class SalesFileGenerationCommand extends Command
      */
     protected $description = 'Generate sales files for IOI City Mall';
 
+    protected SalesFileService $salesFileService;
+
+    public function __construct(SalesFileService $salesFileService)
+    {
+        parent::__construct();
+        $this->salesFileService = $salesFileService;
+    }
+
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $date = $this->argument('date') ?? now()->subDay()->toDateString();
 
@@ -41,14 +51,26 @@ class SalesFileGenerationCommand extends Command
             exit;
         }
 
+        $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
+
+        $salesData = $salesDataService->handle($date, $identifier);
+
+        $stores->each(function ($store) use ($config, $date, $salesData) {
+
+            $file = $this->salesFileService->generate($config, $store, $date, $salesData);
+
+            $this->info($file.' has been created');
+
+        });
+
         $this->comment('Sales files generated successfully.');
 
         return 0;
     }
 
-    private function validateConfigFile($config)
+    private function validateConfigFile(array $config): void
     {
-        if (! isset($config) || empty($config)) {
+        if (empty($config)) {
             $this->error('The configuration file is either missing or empty. Please ensure it is properly configured.');
             exit;
         }
