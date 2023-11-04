@@ -23,11 +23,6 @@ class SalesFileGenerationCommand extends Command
     /**
      * Execute the console command.
      */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function handle()
     {
         $date = $this->argument('date') ?? now()->subDay()->toDateString();
