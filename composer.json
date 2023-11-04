@@ -61,6 +61,10 @@
             "@composer run build",
             "@php vendor/bin/testbench serve"
         ],
+        "pre-commit": [
+            "@composer run analyse",
+            "@composer run format"
+        ],
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
