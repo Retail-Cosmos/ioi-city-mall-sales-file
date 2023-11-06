@@ -18,6 +18,11 @@ return [
             'machine_id' => env('IOI_CITY_MALL_MACHINE_ID'),
             'sst_registered' => true,
         ],
+        [
+            'identifier' => 'store_1',
+            'machine_id' => env('IOI_CITY_MALL_MACHINE_ID'),
+            'sst_registered' => true,
+        ],
         // Add more store configurations as needed
     ],
 
@@ -30,7 +35,7 @@ return [
     | the name of the configured storage disk here.
     |
     */
-    'disk_to_use' => '',
+    'disk_to_use' => 'local',
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +46,7 @@ return [
     | can set the log channel name to keep track of file generation events.
     |
     */
-    'log_channel_for_file_generation' => '',
+    'log_channel_for_file_generation' => 'local',
 
     /*
     |--------------------------------------------------------------------------
@@ -93,6 +98,6 @@ return [
     | the first date to start counting from for the Batch ID calculation.
     |
     */
-    'first_file_generation_date' => '',
+    'first_file_generation_date' => '2023-10-22',
 
 ];
