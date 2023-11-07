@@ -46,7 +46,7 @@ return [
     | can set the log channel name to keep track of file generation events.
     |
     */
-    'log_channel_for_file_generation' => env('IOI_CITY_MALL_FILE_GENERARION_LOG_CHANNEL', 'local'),
+    'log_channel_for_file_generation' => env('IOI_CITY_MALL_FILE_GENERARION_LOG_CHANNEL', 'stack'),
 
     /*
     |--------------------------------------------------------------------------
@@ -98,6 +98,6 @@ return [
     | the first date to start counting from for the Batch ID calculation.
     |
     */
-    'first_file_generation_date' => '2023-10-22',
+    'first_file_generation_date' => '2023-01-01',
 
 ];
