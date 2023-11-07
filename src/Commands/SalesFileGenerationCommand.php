@@ -44,6 +44,11 @@ class SalesFileGenerationCommand extends Command
         $config = config('ioi-city-mall-sales-file');
 
         try {
+
+            if (! isset($config) || empty($config)) {
+                throw new Exception('The configuration file is either missing or empty. Please ensure it is properly configured.');
+            }
+
             $this->validateConfigFile($config);
 
             $stores = $identifier ? collect($config['stores'])->where('identifier', $identifier) : collect($config['stores']);
@@ -78,10 +83,6 @@ class SalesFileGenerationCommand extends Command
 
     private function validateConfigFile(array $config): void
     {
-        if (empty($config)) {
-            $this->error('The configuration file is either missing or empty. Please ensure it is properly configured.');
-            exit;
-        }
 
         if (! isset($config['stores']) || empty($config['stores'])) {
             throw new Exception('The stores array in configuration file is either missing or empty. Please ensure it is properly configured.');
