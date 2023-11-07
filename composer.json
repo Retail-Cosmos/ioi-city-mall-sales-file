@@ -63,7 +63,8 @@
         ],
         "pre-commit": [
             "@composer run analyse",
-            "@composer run format"
+            "@composer run format",
+            "@composer run test"
         ],
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",

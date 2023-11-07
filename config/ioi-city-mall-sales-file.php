@@ -9,12 +9,18 @@ return [
     |
     | Define store-specific settings here. Each store should have an entry
     | containing the store identifier, machine ID, and SST registration status.
+    | * Note: 'identifier' and 'machine_id' must be unique across multiple store configs.
     |
     */
     'stores' => [
         [
             'identifier' => 'store_1',
-            'machine_id' => env('IOI_CITY_MALL_MACHINE_ID'),
+            'machine_id' => env('IOI_CITY_MALL_MACHINE_ID_1'),
+            'sst_registered' => true,
+        ],
+        [
+            'identifier' => 'store_2',
+            'machine_id' => env('IOI_CITY_MALL_MACHINE_ID_2'),
             'sst_registered' => true,
         ],
         // Add more store configurations as needed
@@ -29,7 +35,7 @@ return [
     | the name of the configured storage disk here.
     |
     */
-    'disk_to_use' => '',
+    'disk_to_use' => env('IOI_CITY_MALL_STORAGE_DISK', 'local'),
 
     /*
     |--------------------------------------------------------------------------
@@ -40,7 +46,7 @@ return [
     | can set the log channel name to keep track of file generation events.
     |
     */
-    'log_channel_for_file_generation' => '',
+    'log_channel_for_file_generation' => env('IOI_CITY_MALL_FILE_GENERARION_LOG_CHANNEL', 'local'),
 
     /*
     |--------------------------------------------------------------------------
@@ -67,7 +73,7 @@ return [
     | the log channel name to keep track of file upload events.
     |
     */
-    'log_channel_for_file_upload' => '',
+    'log_channel_for_file_upload' => env('IOI_CITY_MALL_FILE_UPLOAD_LOG_CHANNEL', 'local'),
 
     /*
     |--------------------------------------------------------------------------
@@ -92,6 +98,6 @@ return [
     | the first date to start counting from for the Batch ID calculation.
     |
     */
-    'first_file_generation_date' => '',
+    'first_file_generation_date' => '2023-10-22',
 
 ];
