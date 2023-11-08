@@ -70,6 +70,14 @@ class SalesFileGenerationCommand extends Command
         $identifiers = array_column($stores, 'identifier');
         $machineIds = array_column($stores, 'machine_id');
 
+        if (in_array(null, $machineIds)) {
+            throw new Exception('Machine ID is either missing or empty in one of the items. Please ensure it is properly configured.');
+        }
+
+        if (in_array(null, $identifiers)) {
+            throw new Exception('Identifier is either missing or empty in one of the items. Please ensure it is properly configured.');
+        }
+
         if (count($identifiers) > count(array_unique($identifiers))) {
             throw new Exception('Duplicate Store identifiers found. Please ensure that each store has a unique identifier.');
         }
