@@ -96,7 +96,7 @@ class SalesFileService
 
     private function storeFile(array $config, array $store, Carbon $date, string $fileContent): string
     {
-        $fileName = 'H'.$store['machine_id'].'_'.$date->format('Ymd');
+        $fileName = 'H'.$store['machine_id'].'_'.$date->format('Ymd').'.txt';
 
         $fileContent = mb_convert_encoding($fileContent, 'UTF-8');
 

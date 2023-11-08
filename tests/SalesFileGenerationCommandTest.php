@@ -2,6 +2,7 @@
 
 use App\Services\IOICityMallSalesDataService;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 use RetailCosmos\IoiCityMallSalesFile\Tests\Services\IOICityMallSalesDataServiceMock;
 
 it('throws an error if the configuration file is missing or empty', function () {
@@ -113,14 +114,29 @@ it('throws an error if undefined identifier is used', function ($storesData) {
 })->with('stores_data_x2');
 
 it('generates successful text file', function ($salesData, $storesData) {
+
     config()->set('ioi-city-mall-sales-file.stores', $storesData);
 
     app()->bind(IOICityMallSalesDataService::class, function () use ($salesData) {
         return new IOICityMallSalesDataServiceMock($salesData);
     });
 
+    $date = now()->subDay()->format('Ymd');
+
     Artisan::call('generate:ioi-city-mall-sales-files');
 
-    expect(Artisan::output())->toContain('Sales files generated successfully.');
+    $output = Artisan::output();
+
+    foreach ($storesData as $store) {
+        $fileName = 'H'.$store['machine_id'].'_'.$date;
+
+        $fileExists = Storage::disk(config('ioi-city-mall-sales-file.disk_to_use'))->exists('pending_to_upload/'.$fileName);
+
+        expect($fileExists)->toBeTrue();
+
+        expect($output)->toContain("{$fileName} has been created");
+    }
+
+    expect($output)->toContain('Sales files generated successfully.');
 
 })->with('sales_data_x2')->with('stores_data_x2');
