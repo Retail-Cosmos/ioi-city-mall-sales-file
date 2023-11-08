@@ -1,6 +1,8 @@
 <?php
 
+use App\Services\IOICityMallSalesDataService;
 use Illuminate\Support\Facades\Artisan;
+use RetailCosmos\IoiCityMallSalesFile\Tests\Services\IOICityMallSalesDataServiceMock;
 
 it('throws an error if the configuration file is missing or empty', function () {
 
@@ -101,3 +103,16 @@ it('throws an error if undefined identifier is used', function () {
     expect(Artisan::output())->toContain("No stores found with the identifier {$store}");
 
 });
+
+it('generates successful text file', function ($salesData, $storesData) {
+    config()->set('ioi-city-mall-sales-file.stores', $storesData);
+
+    app()->bind(IOICityMallSalesDataService::class, function () use ($salesData) {
+        return new IOICityMallSalesDataServiceMock($salesData);
+    });
+
+    Artisan::call('generate:ioi-city-mall-sales-files');
+
+    expect(Artisan::output())->toContain('Sales files generated successfully.');
+
+})->with('sales_data_x2')->with('stores_data_x2');
