@@ -54,7 +54,11 @@ class SalesFileGenerationCommand extends Command
             $stores = $identifier ? collect($config['stores'])->where('identifier', $identifier) : collect($config['stores']);
 
             if ($stores->isEmpty()) {
-                throw new Exception("No stores found with the identifier {$identifier}");
+                if (! empty($identifier)) {
+                    throw new Exception("No stores found with the identifier {$identifier}");
+                } else {
+                    throw new Exception('No stores found');
+                }
             }
 
             $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
