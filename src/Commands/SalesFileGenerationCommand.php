@@ -6,6 +6,7 @@ use App\Services\IOICityMallSalesDataService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileService;
 
 class SalesFileGenerationCommand extends Command
@@ -43,6 +44,8 @@ class SalesFileGenerationCommand extends Command
 
         $config = config('ioi-city-mall-sales-file');
 
+        $logChannel = $config['log_channel_for_file_generation'];
+
         try {
 
             if (! isset($config) || empty($config)) {
@@ -73,11 +76,14 @@ class SalesFileGenerationCommand extends Command
 
             });
 
+            Log::channel($logChannel)->info('Sales files generated successfully.');
             $this->comment('Sales files generated successfully.');
 
             return 0;
 
         } catch (Exception $e) {
+            Log::channel($logChannel)->error("An Error Encountered while generating the Sales file for the date {$date}: {$e->getMessage()}");
+
             $this->error($e->getMessage(), 1);
 
             return 1;

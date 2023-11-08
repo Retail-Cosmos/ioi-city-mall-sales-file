@@ -4,6 +4,7 @@ namespace RetailCosmos\IoiCityMallSalesFile\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SalesFileService
@@ -101,6 +102,8 @@ class SalesFileService
         $fileContent = mb_convert_encoding($fileContent, 'UTF-8');
 
         Storage::disk($config['disk_to_use'])->put('pending_to_upload/'.$fileName, $fileContent);
+
+        Log::channel($config['log_channel_for_file_generation'])->info("Sales File {$fileName} for the date {$date} has been created & stored to pending_to_uploads folder");
 
         return $fileName;
 
