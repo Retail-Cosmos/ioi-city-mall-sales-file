@@ -66,7 +66,9 @@ it('throws an error if duplicate Machine ID is found', function () {
 
 });
 
-it('throws an error if disk_to_use is missing or empty', function () {
+it('throws an error if disk_to_use is missing or empty', function ($storesData) {
+
+    config()->set('ioi-city-mall-sales-file.stores', $storesData);
 
     config()->offsetUnset('ioi-city-mall-sales-file.disk_to_use');
 
@@ -74,9 +76,11 @@ it('throws an error if disk_to_use is missing or empty', function () {
 
     expect(Artisan::output())->toContain('The disk_to_use key in configuration file is not set. Please ensure it is properly configured.');
 
-});
+})->with('stores_data_x2');
 
-it('throws an error if first_file_generation_date is missing or empty', function () {
+it('throws an error if first_file_generation_date is missing or empty', function ($storesData) {
+
+    config()->set('ioi-city-mall-sales-file.stores', $storesData);
 
     config()->offsetUnset('ioi-city-mall-sales-file.first_file_generation_date');
 
@@ -84,9 +88,11 @@ it('throws an error if first_file_generation_date is missing or empty', function
 
     expect(Artisan::output())->toContain('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
 
-});
+})->with('stores_data_x2');
 
-it('throws an error if first_file_generation_date date format is mis-configured', function () {
+it('throws an error if first_file_generation_date date format is mis-configured', function ($storesData) {
+
+    config()->set('ioi-city-mall-sales-file.stores', $storesData);
 
     config()->set('ioi-city-mall-sales-file.first_file_generation_date', '2022-22-10');
 
@@ -94,15 +100,17 @@ it('throws an error if first_file_generation_date date format is mis-configured'
 
     expect(Artisan::output())->toContain('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
 
-});
+})->with('stores_data_x2');
 
-it('throws an error if undefined identifier is used', function () {
+it('throws an error if undefined identifier is used', function ($storesData) {
+
+    config()->set('ioi-city-mall-sales-file.stores', $storesData);
 
     Artisan::call('generate:ioi-city-mall-sales-files', ['--identifier' => $store = 'store_22']);
 
     expect(Artisan::output())->toContain("No stores found with the identifier {$store}");
 
-});
+})->with('stores_data_x2');
 
 it('generates successful text file', function ($salesData, $storesData) {
     config()->set('ioi-city-mall-sales-file.stores', $storesData);
