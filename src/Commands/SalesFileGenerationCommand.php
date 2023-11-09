@@ -6,8 +6,8 @@ use App\Services\IOICityMallSalesDataService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileService;
 
 class SalesFileGenerationCommand extends Command
@@ -41,18 +41,18 @@ class SalesFileGenerationCommand extends Command
     public function handle(): int
     {
         $logChannel = config('log_channel_for_file_generation');
-        
+
         $date = $this->argument('date') ?? now()->subDay()->toDateString();
 
         try {
             $config = $this->validateAndGetConfig();
-            
+
             $stores = $this->validateAndGetStores($config);
 
             $this->generateSalesFiles($date, $config, $stores);
 
             Log::channel($logChannel)->info('Sales files generated successfully.');
-            
+
             $this->comment('Sales files generated successfully.');
 
             return 0;
