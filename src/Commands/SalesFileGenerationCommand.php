@@ -61,11 +61,11 @@ class SalesFileGenerationCommand extends Command
                 }
             }
 
-            $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
+            $stores->each(function ($store) use ($config, $date) {
 
-            $salesData = $salesDataService->handle($date, $identifier);
+                $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
 
-            $stores->each(function ($store) use ($config, $date, $salesData) {
+                $salesData = $salesDataService->handle($date, $store['identifier']);
 
                 $file = $this->salesFileService->generate($config, $store, $date, $salesData);
 
