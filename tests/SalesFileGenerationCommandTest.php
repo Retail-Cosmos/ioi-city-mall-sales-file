@@ -128,7 +128,7 @@ it('generates successful text file', function ($salesData, $storesData) {
     $output = Artisan::output();
 
     foreach ($storesData as $store) {
-        $fileName = 'H'.$store['machine_id'].'_'.$date;
+        $fileName = 'H'.$store['machine_id'].'_'.$date.'.txt';
 
         $fileExists = Storage::disk(config('ioi-city-mall-sales-file.disk_to_use'))->exists('pending_to_upload/'.$fileName);
 
