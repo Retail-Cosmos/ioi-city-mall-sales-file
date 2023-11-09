@@ -60,11 +60,11 @@ class SalesFileGenerationCommand extends Command
     {
         $config = config('ioi-city-mall-sales-file');
 
-        if (!isset($config) || empty($config)) {
+        if (! isset($config) || empty($config)) {
             throw new Exception('The configuration file is either missing or empty. Please ensure it is properly configured.');
         }
 
-        if (!isset($config['stores']) || empty($config['stores'])) {
+        if (! isset($config['stores']) || empty($config['stores'])) {
             throw new Exception('The stores array in configuration file is either missing or empty. Please ensure it is properly configured.');
         }
 
@@ -88,12 +88,12 @@ class SalesFileGenerationCommand extends Command
             throw new Exception('Duplicate Machine IDs found. Please ensure that each store has a unique Machine ID.');
         }
 
-        if (!isset($config['disk_to_use']) || empty($config['disk_to_use'])) {
+        if (! isset($config['disk_to_use']) || empty($config['disk_to_use'])) {
             throw new Exception('The disk_to_use key in configuration file is not set. Please ensure it is properly configured.');
         }
 
         try {
-            if (!isset($config['first_file_generation_date']) || !strtotime($config['first_file_generation_date'])) {
+            if (! isset($config['first_file_generation_date']) || ! strtotime($config['first_file_generation_date'])) {
                 throw new Exception();
             }
 
@@ -115,7 +115,7 @@ class SalesFileGenerationCommand extends Command
         $stores = $identifier ? collect($config['stores'])->where('identifier', $identifier) : collect($config['stores']);
 
         if ($stores->isEmpty()) {
-            if (!empty($identifier)) {
+            if (! empty($identifier)) {
                 throw new Exception("No stores found with the identifier {$identifier}");
             } else {
                 throw new Exception('No stores found');
