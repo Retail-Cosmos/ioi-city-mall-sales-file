@@ -12,7 +12,7 @@ dataset('stores_data_x5', [
     ],
 ]);
 
-function fakeStoresData($times = 1)
+function fakeStoresData($times = 1): array
 {
     $fakeDataArray = [];
 
@@ -25,4 +25,26 @@ function fakeStoresData($times = 1)
     }
 
     return $fakeDataArray;
+}
+
+function sampleStoresData1(): array
+{
+    return [
+        [
+            'identifier' => 'store_1',
+            'machine_id' => 87654321,
+            'sst_registered' => false,
+        ],
+    ];
+}
+
+function sampleStoresData2(): array
+{
+    return [
+        [
+            'identifier' => 'store_22',
+            'machine_id' => 39193343,
+            'sst_registered' => true,
+        ],
+    ];
 }

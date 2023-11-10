@@ -113,30 +113,48 @@ it('throws an error if undefined identifier is used', function ($storesData) {
 
 })->with('stores_data_x2');
 
-it('generates successful text file', function ($salesData, $storesData) {
+it('generates successful text file with static stores & sales data test', function () {
 
-    config()->set('ioi-city-mall-sales-file.stores', $storesData);
+    $salesData = [sampleSalesData1(), sampleSalesData2()];
 
-    app()->bind(IOICityMallSalesDataService::class, function () use ($salesData) {
-        return new IOICityMallSalesDataServiceMock($salesData);
-    });
+    $storesData = [sampleStoresData1(), sampleStoresData2()];
 
-    $date = now()->subDay()->format('Ymd');
+    for ($i = 0; $i < 2; $i++) {
 
-    Artisan::call('generate:ioi-city-mall-sales-files');
+        config()->set('ioi-city-mall-sales-file.stores', $storesData[$i]);
 
-    $output = Artisan::output();
+        $data = $salesData[$i];
 
-    foreach ($storesData as $store) {
-        $fileName = 'H'.$store['machine_id'].'_'.$date.'.txt';
+        app()->bind(IOICityMallSalesDataService::class, function () use ($data) {
+            return new IOICityMallSalesDataServiceMock($data);
+        });
 
-        $fileExists = Storage::disk(config('ioi-city-mall-sales-file.disk_to_use'))->exists('pending_to_upload/'.$fileName);
+        $date = now()->subDay()->format('Ymd');
 
-        expect($fileExists)->toBeTrue();
+        Artisan::call('generate:ioi-city-mall-sales-files');
 
-        expect($output)->toContain("{$fileName} has been created");
+        $output = Artisan::output();
+
+        foreach ($storesData[$i] as $store) {
+
+            $fileName = 'H'.$store['machine_id'].'_'.$date.'.txt';
+
+            $config = config('ioi-city-mall-sales-file.disk_to_use');
+
+            $filePath = 'pending_to_upload/'.$fileName;
+
+            $fileExists = Storage::disk($config)->exists($filePath);
+
+            $fileContents = Storage::disk($config)->get($filePath);
+
+            expect($fileContents)->toMatchSnapshot();
+
+            expect($fileExists)->toBeTrue();
+
+            expect($output)->toContain("{$fileName} has been created");
+        }
+
+        expect($output)->toContain('Sales files generated successfully.');
     }
 
-    expect($output)->toContain('Sales files generated successfully.');
-
-})->with('sales_data_x2')->with('stores_data_x2');
+});
