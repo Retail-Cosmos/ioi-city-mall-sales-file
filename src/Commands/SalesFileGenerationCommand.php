@@ -2,9 +2,12 @@
 
 namespace RetailCosmos\IoiCityMallSalesFile\Commands;
 
+use App\Services\IOICityMallSalesDataService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
+use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileService;
 
 class SalesFileGenerationCommand extends Command
 {
@@ -22,29 +25,26 @@ class SalesFileGenerationCommand extends Command
      */
     protected $description = 'Generate sales files for IOI City Mall';
 
+    protected SalesFileService $salesFileService;
+
+    public function __construct(SalesFileService $salesFileService)
+    {
+        parent::__construct();
+
+        $this->salesFileService = $salesFileService;
+    }
+
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
-        $date = $this->argument('date') ?? now()->subDay()->toDateString();
-
-        $identifier = $this->option('identifier');
-
-        $config = config('ioi-city-mall-sales-file');
-
         try {
-            $this->validateConfigFile($config);
+            $config = $this->validateAndGetConfig();
 
-            $stores = $identifier ? collect($config['stores'])->where('identifier', $identifier) : collect($config['stores']);
+            $stores = $this->validateAndGetStores($config);
 
-            if ($stores->isEmpty()) {
-                if (! empty($identifier)) {
-                    throw new Exception("No stores found with the identifier {$identifier}");
-                } else {
-                    throw new Exception('No stores found');
-                }
-            }
+            $this->generateSalesFiles($config, $stores);
 
             $this->comment('Sales files generated successfully.');
 
@@ -56,8 +56,10 @@ class SalesFileGenerationCommand extends Command
         }
     }
 
-    private function validateConfigFile($config)
+    private function validateAndGetConfig(): array
     {
+        $config = config('ioi-city-mall-sales-file');
+
         if (! isset($config) || empty($config)) {
             throw new Exception('The configuration file is either missing or empty. Please ensure it is properly configured.');
         }
@@ -102,5 +104,38 @@ class SalesFileGenerationCommand extends Command
         } catch (\Throwable $th) {
             throw new Exception('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
         }
+
+        return $config;
+    }
+
+    private function validateAndGetStores(array $config): Collection
+    {
+        $identifier = $this->option('identifier');
+
+        $stores = $identifier ? collect($config['stores'])->where('identifier', $identifier) : collect($config['stores']);
+
+        if ($stores->isEmpty()) {
+            if (! empty($identifier)) {
+                throw new Exception("No stores found with the identifier {$identifier}");
+            } else {
+                throw new Exception('No stores found');
+            }
+        }
+
+        return $stores;
+    }
+
+    private function generateSalesFiles(array $config, Collection $stores): void
+    {
+        $date = $this->argument('date') ?? now()->subDay()->toDateString();
+        $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
+
+        $stores->each(function ($store) use ($config, $date, $salesDataService) {
+            $salesData = $salesDataService->handle($date, $store['identifier']);
+
+            $file = $this->salesFileService->generate($config, $store, $date, $salesData);
+
+            $this->info($file.' has been created');
+        });
     }
 }
