@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\IOICityMallSalesDataService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use RetailCosmos\IoiCityMallSalesFile\Tests\Services\IOICityMallSalesDataServiceMock;
@@ -119,6 +120,8 @@ it('generates successful text file with static stores & sales data test', functi
 
     $storesData = [sampleStoresData1(), sampleStoresData2()];
 
+    $dates = ['2023-01-01', '2023-10-31'];
+
     for ($i = 0; $i < 2; $i++) {
 
         config()->set('ioi-city-mall-sales-file.stores', $storesData[$i]);
@@ -129,15 +132,15 @@ it('generates successful text file with static stores & sales data test', functi
             return new IOICityMallSalesDataServiceMock($data);
         });
 
-        $date = now()->subDay()->format('Ymd');
-
-        Artisan::call('generate:ioi-city-mall-sales-files');
+        Artisan::call('generate:ioi-city-mall-sales-files', ['date' => $dates[$i]]);
 
         $output = Artisan::output();
 
         foreach ($storesData[$i] as $store) {
 
-            $fileName = 'H'.$store['machine_id'].'_'.$date.'.txt';
+            $formattedDate = Carbon::parse($dates[$i])->format('Ymd');
+
+            $fileName = 'H'.$store['machine_id'].'_'.$formattedDate.'.txt';
 
             $config = config('ioi-city-mall-sales-file.disk_to_use');
 
@@ -156,5 +159,68 @@ it('generates successful text file with static stores & sales data test', functi
 
         expect($output)->toContain('Sales files generated successfully.');
     }
+
+});
+
+it('throws an error if happened_at date and date argument is not same', function ($storesData, $salesData) {
+
+    config()->set('ioi-city-mall-sales-file.stores', $storesData);
+
+    $data = $salesData;
+
+    app()->bind(IOICityMallSalesDataService::class, function () use ($data) {
+        return new IOICityMallSalesDataServiceMock($data);
+    });
+
+    Artisan::call('generate:ioi-city-mall-sales-files');
+
+    $output = Artisan::output();
+
+    $previousDaysDate = now()->subDay()->toDateString();
+
+    expect($output)->toContain("Sales data must have records of the date {$previousDaysDate}");
+
+})->with('stores_data_x2')->with('static_sales_data_1');
+
+it('generates successful text file with 0 sales', function () {
+
+    $stores = sampleStoresData1();
+
+    config()->set('ioi-city-mall-sales-file.stores', $stores);
+
+    $data = collect([]);
+
+    app()->bind(IOICityMallSalesDataService::class, function () use ($data) {
+        return new IOICityMallSalesDataServiceMock($data);
+    });
+
+    $date = '2023-06-01';
+
+    Artisan::call('generate:ioi-city-mall-sales-files', ['date' => $date]);
+
+    $output = Artisan::output();
+
+    foreach ($stores as $store) {
+
+        $formattedDate = Carbon::parse($date)->format('Ymd');
+
+        $fileName = 'H'.$store['machine_id'].'_'.$formattedDate.'.txt';
+
+        $config = config('ioi-city-mall-sales-file.disk_to_use');
+
+        $filePath = 'pending_to_upload/'.$fileName;
+
+        $fileExists = Storage::disk($config)->exists($filePath);
+
+        $fileContents = Storage::disk($config)->get($filePath);
+
+        expect($fileContents)->toMatchSnapshot();
+
+        expect($fileExists)->toBeTrue();
+
+        expect($output)->toContain("{$fileName} has been created");
+    }
+
+    expect($output)->toContain('Sales files generated successfully.');
 
 });

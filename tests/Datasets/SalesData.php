@@ -12,6 +12,12 @@ dataset('sales_data_x5', [
     ],
 ]);
 
+dataset('static_sales_data_1', [
+    [
+        sampleSalesData2(),
+    ],
+]);
+
 function fakeSalesData($times = 1): array
 {
     $fakeDataArray = [];
@@ -61,9 +67,9 @@ function sampleSalesData1(): array
             'discount' => 0,
             'SST' => 0,
             'payments' => [
-                'cash' => 50,
+                'cash' => 0,
                 'tng' => 0,
-                'visa' => 30,
+                'visa' => 0,
                 'mastercard' => 0,
                 'amex' => 0,
                 'voucher' => 10,
@@ -83,7 +89,7 @@ function sampleSalesData2(): array
             'SST' => 0,
             'payments' => [
                 'cash' => 50,
-                'tng' => 5,
+                'tng' => 0,
                 'visa' => 30,
                 'mastercard' => 0,
                 'amex' => 0,
@@ -98,7 +104,7 @@ function sampleSalesData2(): array
             'SST' => 0,
             'payments' => [
                 'cash' => 50,
-                'tng' => 5,
+                'tng' => 0,
                 'visa' => 30,
                 'mastercard' => 0,
                 'amex' => 0,
@@ -108,7 +114,7 @@ function sampleSalesData2(): array
         ],
         [
             'happened_at' => '2023-10-31 12:30 PM',
-            'net_amount' => 120,
+            'net_amount' => 130,
             'discount' => 10,
             'SST' => 0,
             'payments' => [
@@ -123,7 +129,7 @@ function sampleSalesData2(): array
         ],
         [
             'happened_at' => '2023-10-31 02:45 PM',
-            'net_amount' => 150,
+            'net_amount' => 165,
             'discount' => 25,
             'SST' => 0,
             'payments' => [
@@ -138,7 +144,7 @@ function sampleSalesData2(): array
         ],
         [
             'happened_at' => '2023-10-31 04:00 PM',
-            'net_amount' => 95,
+            'net_amount' => 110,
             'discount' => 15,
             'SST' => 0,
             'payments' => [
