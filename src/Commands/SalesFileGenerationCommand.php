@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileService;
 
 class SalesFileGenerationCommand extends Command
@@ -40,11 +42,13 @@ class SalesFileGenerationCommand extends Command
     public function handle(): int
     {
         try {
+            [$date] = $this->validateArguments();
+
             $config = $this->validateAndGetConfig();
 
-            $stores = $this->validateAndGetStores($config);
+            [$stores] = $this->validateOptions();
 
-            $this->generateSalesFiles($config, $stores);
+            $this->generateSalesFiles($config, collect($stores), $date);
 
             $this->comment('Sales files generated successfully.');
 
@@ -56,6 +60,44 @@ class SalesFileGenerationCommand extends Command
         }
     }
 
+    protected function validateArguments(): array
+    {
+        $validator = Validator::make($this->arguments(), [
+            'date' => ['nullable', 'date', 'date_format:"Y-m-d"'],
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
+        }
+
+        $date = $this->argument('date');
+
+        if (is_null($date)) {
+            $date = now()->subDay()->toDateString();
+        }
+
+        return [$date];
+    }
+
+    protected function validateOptions(): array
+    {
+        $config = config('ioi-city-mall-sales-file');
+
+        $identifiers = array_column($config['stores'], 'identifier');
+
+        $validator = Validator::make($this->options(), [
+            'identifier' => ['nullable', Rule::in($identifiers)],
+        ], [
+            'identifier' => "No stores found with the identifier {$this->option('identifier')}",
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
+        }
+
+        return [$config['stores']];
+    }
+
     private function validateAndGetConfig(): array
     {
         $config = config('ioi-city-mall-sales-file');
@@ -64,70 +106,37 @@ class SalesFileGenerationCommand extends Command
             throw new Exception('The configuration file is either missing or empty. Please ensure it is properly configured.');
         }
 
-        if (! isset($config['stores']) || empty($config['stores'])) {
-            throw new Exception('The stores array in configuration file is either missing or empty. Please ensure it is properly configured.');
+        $validator = Validator::make($config, [
+            'stores' => ['required', 'array'],
+            'stores.*.identifier' => ['required', 'distinct'],
+            'stores.*.machine_id' => ['required', 'distinct'],
+            'stores.*.sst_registered' => ['required', 'boolean'],
+            'disk_to_use' => ['required'],
+            'log_channel_for_file_generation' => ['required'],
+            'sftp' => ['required'],
+            'log_channel_for_file_upload' => ['required'],
+            'notifications' => ['required'],
+            'first_file_generation_date' => ['required', 'date_format:"Y-m-d"'],
+        ], [
+            'stores.*.identifier.distinct' => 'Duplicate Store identifiers found. Please ensure that each store has a unique identifier.',
+            'stores.*.identifier.required' => 'Identifier is either missing or empty in one of the items. Please ensure it is properly configured.',
+            'stores.*.machine_id.required' => 'Machine ID is either missing or empty in one of the items. Please ensure it is properly configured.',
+            'stores.*.machine_id.distinct' => 'Duplicate Machine IDs found. Please ensure that each store has a unique Machine ID.',
+            'stores.required' => 'The stores array in configuration file is either missing or empty. Please ensure it is properly configured.',
+            'disk_to_use.required' => 'The disk_to_use key in configuration file is not set. Please ensure it is properly configured.',
+            'first_file_generation_date.required' => 'The first_file_generation_date key in configuration file is not set. Please ensure it is properly configured.',
+            'first_file_generation_date.date_format' => 'Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.',
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
         }
 
-        $stores = $config['stores'];
-        $identifiers = array_column($stores, 'identifier');
-        $machineIds = array_column($stores, 'machine_id');
-
-        if (in_array(null, $machineIds)) {
-            throw new Exception('Machine ID is either missing or empty in one of the items. Please ensure it is properly configured.');
-        }
-
-        if (in_array(null, $identifiers)) {
-            throw new Exception('Identifier is either missing or empty in one of the items. Please ensure it is properly configured.');
-        }
-
-        if (count($identifiers) > count(array_unique($identifiers))) {
-            throw new Exception('Duplicate Store identifiers found. Please ensure that each store has a unique identifier.');
-        }
-
-        if (count($machineIds) > count(array_unique($machineIds))) {
-            throw new Exception('Duplicate Machine IDs found. Please ensure that each store has a unique Machine ID.');
-        }
-
-        if (! isset($config['disk_to_use']) || empty($config['disk_to_use'])) {
-            throw new Exception('The disk_to_use key in configuration file is not set. Please ensure it is properly configured.');
-        }
-
-        try {
-            if (! isset($config['first_file_generation_date']) || ! strtotime($config['first_file_generation_date'])) {
-                throw new Exception();
-            }
-
-            $firstFileDate = Carbon::createFromFormat('Y-m-d', $config['first_file_generation_date']);
-            if ($firstFileDate->format('Y-m-d') !== $config['first_file_generation_date']) {
-                throw new Exception();
-            }
-        } catch (\Throwable $th) {
-            throw new Exception('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
-        }
-
-        return $config;
+        return $validator->validated();
     }
 
-    private function validateAndGetStores(array $config): Collection
+    private function generateSalesFiles(array $config, Collection $stores, string $date): void
     {
-        $identifier = $this->option('identifier');
-
-        $stores = $identifier ? collect($config['stores'])->where('identifier', $identifier) : collect($config['stores']);
-
-        if ($stores->isEmpty()) {
-            if (! empty($identifier)) {
-                throw new Exception("No stores found with the identifier {$identifier}");
-            } else {
-                throw new Exception('No stores found');
-            }
-        }
-
-        return $stores;
-    }
-
-    private function generateSalesFiles(array $config, Collection $stores): void
-    {
-        $date = $this->argument('date') ?? now()->subDay()->toDateString();
         $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
 
         $stores->each(function ($store) use ($config, $date, $salesDataService) {
