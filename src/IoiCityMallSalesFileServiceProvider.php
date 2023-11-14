@@ -3,6 +3,7 @@
 namespace RetailCosmos\IoiCityMallSalesFile;
 
 use RetailCosmos\IoiCityMallSalesFile\Commands\SalesFileGenerationCommand;
+use RetailCosmos\IoiCityMallSalesFile\Commands\SalesFileUploadCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -13,6 +14,6 @@ class IoiCityMallSalesFileServiceProvider extends PackageServiceProvider
         $package
             ->name('ioi-city-mall-sales-file')
             ->hasConfigFile()
-            ->hasCommand(SalesFileGenerationCommand::class);
+            ->hasCommands([SalesFileGenerationCommand::class, SalesFileUploadCommand::class]);
     }
 }
