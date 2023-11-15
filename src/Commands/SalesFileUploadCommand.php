@@ -25,12 +25,6 @@ class SalesFileUploadCommand extends Command
      */
     protected $description = 'Upload generated Sales files for IOI City Mall';
 
-    public function __construct()
-    {
-        parent::__construct();
-
-    }
-
     /**
      * Execute the console command.
      */
