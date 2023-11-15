@@ -133,6 +133,14 @@ class SalesFileGenerationCommand extends Command
         $stores->each(function ($store) use ($config, $date, $salesDataService) {
             $salesData = $salesDataService->handle($date, $store['identifier']);
 
+            $validSalesDataCount = $salesData->where(function ($item) use ($date) {
+                return Carbon::parse($item['happened_at'])->isSameDay($date);
+            })->count();
+
+            if ($validSalesDataCount < $salesData->count()) {
+                throw new Exception("Sales data must have records of the date {$date}");
+            }
+
             $file = $this->salesFileService->generate($config, $store, $date, $salesData);
 
             $this->info($file.' has been created');

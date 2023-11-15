@@ -59,7 +59,7 @@ class SalesFileService
     {
         $fileContent = '';
 
-        $batchId = $date->diffInDays(Carbon::parse($config['first_file_generation_date']));
+        $batchId = $date->diffInDays(Carbon::parse($config['first_file_generation_date'])) + 1;
 
         $groupedSales->each(function ($sales, $hour) use (&$fileContent, $date, $store, $batchId) {
 
