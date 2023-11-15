@@ -88,7 +88,7 @@ it('throws an error if first_file_generation_date is missing or empty', function
 
     Artisan::call('generate:ioi-city-mall-sales-files');
 
-    expect(Artisan::output())->toContain('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
+    expect(Artisan::output())->toContain('The first_file_generation_date key in configuration file is not set. Please ensure it is properly configured.');
 
 })->with('stores_data_x2');
 
