@@ -86,8 +86,7 @@ class SalesFileUploadCommand extends Command
             'sftp.port' => ['required'],
             'sftp.username' => ['required'],
             'sftp.password' => ['required'],
-            'log_channel_for_file_upload' => ['required'],
-            'notifications' => ['required'],
+            'sftp.path' => ['required'],
         ], [
             'disk_to_use.required' => 'The disk_to_use key in configuration file is not set. Please ensure it is properly configured.',
             'sftp' => 'SFTP Config array is required.',
@@ -95,8 +94,7 @@ class SalesFileUploadCommand extends Command
             'sftp.port' => 'SFTP Config array must have a Port Configured Properly.',
             'sftp.username' => 'SFTP Config array must have a valid username.',
             'sftp.password' => 'SFTP Config array must have a valid password.',
-            'first_file_generation_date.required' => 'The first_file_generation_date key in configuration file is not set. Please ensure it is properly configured.',
-            'first_file_generation_date.date_format' => 'Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.',
+            'sftp.path' => 'SFTP Config array must have a valid file(s) upload path.',
         ]);
 
         if ($validator->fails()) {
