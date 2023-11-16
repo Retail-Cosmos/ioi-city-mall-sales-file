@@ -63,6 +63,7 @@ return [
         'port' => env('IOI_CITY_MALL_SFTP_PORT'), // SFTP server port
         'username' => env('IOI_CITY_MALL_SFTP_USERNAME'), // SFTP username
         'password' => env('IOI_CITY_MALL_SFTP_PASSWORD'), // SFTP password
+        'path' => env('IOI_CITY_MALL_SFTP_FILE_UPLOAD_PATH'),
     ],
 
     /*
