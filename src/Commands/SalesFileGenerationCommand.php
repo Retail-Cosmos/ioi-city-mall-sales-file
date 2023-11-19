@@ -62,7 +62,7 @@ class SalesFileGenerationCommand extends Command
 
             Log::channel($logChannel)->info($message);
 
-            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'success', messages: $message));
+            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'success', messages: "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk"));
 
             $this->comment($message);
 
@@ -73,7 +73,7 @@ class SalesFileGenerationCommand extends Command
 
             Log::channel($logChannel)->error($message);
 
-            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'error', messages: $message));
+            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'error', messages: "Sales File Generation Failed for the date of {$date} - {$e->getMessage()}"));
 
             $this->error($e->getMessage(), 1);
 
