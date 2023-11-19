@@ -42,7 +42,7 @@ class SalesFileGenerationCommand extends Command
      */
     public function handle(): int
     {
-        $response = [$logChannel, $date] = $this->validateCommunicationChannels();
+        $response = [$date, $logChannel] = $this->validateCommunicationChannels();
 
         if (! is_array($response)) {
             return 1;
@@ -103,8 +103,8 @@ class SalesFileGenerationCommand extends Command
             [$date] = $this->validateArguments();
 
             return [
-                ...array_values($validator->validated()),
                 $date,
+                ...array_values($validator->validated()),
             ];
 
         } catch (Exception $e) {
