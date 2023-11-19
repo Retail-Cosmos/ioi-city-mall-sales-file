@@ -14,6 +14,7 @@ class IoiCityMallSalesFileServiceProvider extends PackageServiceProvider
         $package
             ->name('ioi-city-mall-sales-file')
             ->hasConfigFile()
+            ->hasViews()
             ->hasCommands([SalesFileGenerationCommand::class, SalesFileUploadCommand::class]);
     }
 }
