@@ -8,8 +8,10 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileNotification;
 use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileService;
 
 class SalesFileGenerationCommand extends Command
@@ -42,7 +44,7 @@ class SalesFileGenerationCommand extends Command
      */
     public function handle(): int
     {
-        $response = [$logChannel, $date] = $this->validateCommunicationChannels();
+        $response = [$notificationConfig, $logChannel, $date] = $this->validateCommunicationChannels();
 
         if (! is_array($response)) {
             return 1;
@@ -60,6 +62,8 @@ class SalesFileGenerationCommand extends Command
 
             Log::channel($logChannel)->info($message);
 
+            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'success', messages: $message));
+
             $this->comment($message);
 
             return 0;
@@ -68,6 +72,8 @@ class SalesFileGenerationCommand extends Command
             $message = "An Error Encountered while generating the Sales file - {$e->getMessage()}";
 
             Log::channel($logChannel)->error($message);
+
+            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'error', messages: $message));
 
             $this->error($e->getMessage(), 1);
 
