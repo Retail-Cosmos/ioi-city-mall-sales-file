@@ -37,7 +37,7 @@ class SalesFileNotification extends Notification
     {
         return (new MailMessage)
             ->subject('IOI City Mall Sales File Generation Notification')
-            ->view('ioi-city-mall-sales-file::mail.file-generation', ['status' => $this->status, 'messages' => $this->messages]);
+            ->markdown('ioi-city-mall-sales-file::mail.file-generation', ['status' => $this->status, 'messages' => $this->messages]);
     }
 
     public function getStatus()
