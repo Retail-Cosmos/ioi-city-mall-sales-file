@@ -197,7 +197,7 @@ class SalesFileGenerationCommand extends Command
             })->count();
 
             if ($validSalesDataCount < $salesData->count()) {
-                throw new Exception("Sales data must have records of the date {$date}");
+                throw new Exception("Sales data must have records of the date {$date} only. Sales from other dates are not allowed.");
             }
 
             $file = $this->salesFileService->generate($config, $store, $date, $salesData);
