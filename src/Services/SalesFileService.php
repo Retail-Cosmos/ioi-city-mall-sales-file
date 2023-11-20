@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class SalesFileService
 {
-    public function generate(array $config, array $store, string $date, collection $salesData): string
+    public function generate(array $config, array $store, string $date, Collection $salesData): string
     {
 
         $groupedSales = $this->groupSalesByHour($salesData);
@@ -20,7 +20,7 @@ class SalesFileService
         return $this->storeFile($config, $store, $date, $fileContent);
     }
 
-    private function groupSalesByHour(collection $salesData): Collection
+    private function groupSalesByHour(Collection $salesData): Collection
     {
         $allHours = array_fill_keys(range(0, 23), []);
 

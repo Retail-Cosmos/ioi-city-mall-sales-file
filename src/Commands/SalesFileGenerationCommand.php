@@ -151,6 +151,10 @@ class SalesFileGenerationCommand extends Command
         $stores->each(function ($store) use ($config, $date, $salesDataService) {
             $salesData = $salesDataService->handle($date, $store['identifier']);
 
+            if (! $salesData instanceof Collection) {
+                throw new Exception("A collection must be returned from the handle() method of the class.");
+            }
+
             $validSalesDataCount = $salesData->where(function ($item) use ($date) {
                 return Carbon::parse($item['happened_at'])->isSameDay($date);
             })->count();
