@@ -26,7 +26,7 @@ php artisan vendor:publish --tag="ioi-city-mall-sales-file-config"
 
 ## Usage
 
-The functionality is divided into two parts. The first part is the File Generation and the second part is the File Upload (SFTP).
+The functionality is divided into two parts. The first part is the [File Generation](#file-generation) and the second part is the [File Upload (SFTP)](#file-upload-sftp).
 
 ### File Generation
 
@@ -43,11 +43,11 @@ $schedule->command('generate:ioi-city-mall-sales-files')->daily();
 >    - `date` - Date in the YYYY-MM-DD format to generate a sales file for a specific date.
 >    - `identifier` - To generate a sales file for a specific connection only. (It must exist in the config file inside one of the stores)
 
-1. Create a new class `IOICityMallSalesDataService` in the `App/Services` namespace and add a `handle()` method in it. The package will call this method to get the sales data. The method receives the following parameters:
+2. Create a new class `IOICityMallSalesDataService` in the `App/Services` namespace and add a `handle()` method in it. The package will call this method to get the sales data. The method receives the following parameters:
     - `identifier` - as per your config per store (there can be multiple stores)
     - `date` - YYYY-MM-DD format
 
-1. This is the main part of the implementation. You need to add code for this method in a way that it fetches the sales data for the specified store for the specified date and returns a collection of sales. The keys need to be:
+3. This is the main part of the implementation. You need to add code for this method in a way that it fetches the sales data for the specified store for the specified date and returns a collection of sales. The keys need to be:
 ```
     - 'happened_at' (Date and time of the sale)
     - 'net_amount' (Total amount of the sale after discount and before SST)
@@ -65,7 +65,7 @@ $schedule->command('generate:ioi-city-mall-sales-files')->daily();
 > [!TIP]
 > Take a note that you need to return sales for all the counters/registers of a store. The Mall expects the sales of all the counters to be combined in the file.
 
-:rocket: And that is it. The scheduler calls the command every day and the package generates a sales file and puts it into the the filesystem as per the config. Next, you may follow the steps for the File Upload part.
+:rocket: And that is it. The scheduler calls the command every day and the package generates a sales file and puts it into the the filesystem as per the config. Next, you may follow the steps for the [File Upload](#file-upload-sftp) part.
 
 #### Notes about generated sales files
 - The generated files are stored as per your config disk. There are two directories inside it: `pending_to_upload` and `uploaded` (These two directories are auto-generated if they don’t exist)
