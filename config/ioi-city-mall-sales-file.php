@@ -82,8 +82,8 @@ return [
     | Notification Settings
     |--------------------------------------------------------------------------
     |
-    | Configure the notification settings, including the receiver's name and
-    | email address for sending sales data-related notifications.
+    | Configure the notification settings for email notifications, including
+    | the receiver's name and email address for sending sales data-related notifications.
     |
     */
     'notifications' => [
