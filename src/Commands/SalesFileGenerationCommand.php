@@ -42,13 +42,8 @@ class SalesFileGenerationCommand extends Command
      */
     public function handle(): int
     {
-        $response = [$date, $logChannel] = $this->validateCommunicationChannels();
-
-        if (! is_array($response)) {
-            return 1;
-        }
-
         try {
+            [$date, $logChannel] = $this->validateCommunicationChannels();
 
             $config = $this->validateAndGetConfig();
 
@@ -67,7 +62,9 @@ class SalesFileGenerationCommand extends Command
         } catch (Exception $e) {
             $message = "An Error Encountered while generating the Sales file - {$e->getMessage()}";
 
-            Log::channel($logChannel)->error($message);
+            if (! empty($logChannel)) {
+                Log::channel($logChannel)->error($message);
+            }
 
             $this->error($e->getMessage(), 1);
 
@@ -79,41 +76,32 @@ class SalesFileGenerationCommand extends Command
     {
         $config = config('ioi-city-mall-sales-file');
 
-        try {
-            if (! isset($config) || empty($config)) {
-                throw new Exception('The configuration file is either missing or empty. Please ensure it is properly configured.');
-            }
-
-            $validator = Validator::make($config, [
-                'notifications' => ['required'],
-                'notifications.name' => ['required'],
-                'notifications.email' => ['required', 'email'],
-                'log_channel_for_file_generation' => ['required'],
-            ], [
-                'notifications.name.required' => 'Please set name in config notifications array',
-                'notifications.email.required' => 'Please set e-mail in config notifications array',
-                'notifications.email.email' => 'Please set valid e-mail in config notifications array',
-                'log_channel_for_file_generation.required' => 'Please set the log channel for file generation',
-            ]);
-
-            if ($validator->fails()) {
-                throw new Exception($validator->errors()->first());
-            }
-
-            [$date] = $this->validateArguments();
-
-            return [
-                $date,
-                ...array_values($validator->validated()),
-            ];
-
-        } catch (Exception $e) {
-            $message = "An Error Encountered while generating the Sales file - {$e->getMessage()}";
-
-            $this->error($message, 1);
-
-            return 1;
+        if (! isset($config) || empty($config)) {
+            throw new Exception('The configuration file is either missing or empty. Please ensure it is properly configured.');
         }
+
+        $validator = Validator::make($config, [
+            'notifications' => ['required'],
+            'notifications.name' => ['required'],
+            'notifications.email' => ['required', 'email'],
+            'log_channel_for_file_generation' => ['required'],
+        ], [
+            'notifications.name.required' => 'Please set name in config notifications array',
+            'notifications.email.required' => 'Please set e-mail in config notifications array',
+            'notifications.email.email' => 'Please set valid e-mail in config notifications array',
+            'log_channel_for_file_generation.required' => 'Please set the log channel for file generation',
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
+        }
+
+        [$date] = $this->validateArguments();
+
+        return [
+            $date,
+            ...array_values($validator->validated()),
+        ];
 
     }
 
