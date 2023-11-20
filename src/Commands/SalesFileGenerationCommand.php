@@ -152,7 +152,7 @@ class SalesFileGenerationCommand extends Command
             $salesData = $salesDataService->handle($date, $store['identifier']);
 
             if (! $salesData instanceof Collection) {
-                throw new Exception("A collection must be returned from the handle() method of the class.");
+                throw new Exception('A collection must be returned from the handle() method of the class.');
             }
 
             $validSalesDataCount = $salesData->where(function ($item) use ($date) {
