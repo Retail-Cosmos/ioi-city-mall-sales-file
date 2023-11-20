@@ -178,7 +178,7 @@ it('throws an error if happened_at date and date argument is not same', function
 
     $previousDaysDate = now()->subDay()->toDateString();
 
-    expect($output)->toContain("Sales data must have records of the date {$previousDaysDate}");
+    expect($output)->toContain("Sales data must have records of the date {$previousDaysDate} only. Sales from other dates are not allowed.");
 
 })->with('stores_data_x2')->with('static_sales_data_1');
 
