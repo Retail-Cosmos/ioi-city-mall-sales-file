@@ -45,7 +45,9 @@ class SalesFileGenerationCommand extends Command
     public function handle(): int
     {
         try {
-            [$date, $notificationConfig, $logChannel] = $this->validateCommunicationChannels();
+            [$notificationConfig, $logChannel] = $this->validateCommunicationChannels();
+
+            [$date] = $this->validateArguments();
 
             $config = $this->validateAndGetConfig();
 
@@ -104,10 +106,7 @@ class SalesFileGenerationCommand extends Command
             throw new Exception($validator->errors()->first());
         }
 
-        [$date] = $this->validateArguments();
-
         return [
-            $date,
             ...array_values($validator->validated()),
         ];
 
