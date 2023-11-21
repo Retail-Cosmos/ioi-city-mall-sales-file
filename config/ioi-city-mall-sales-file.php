@@ -82,13 +82,13 @@ return [
     | Notification Settings
     |--------------------------------------------------------------------------
     |
-    | Configure the notification settings, including the notification name and
-    | email address for sending sales data-related notifications.
+    | Configure the notification settings for email notifications, including
+    | the receiver's name and email address for sending sales data-related notifications.
     |
     */
     'notifications' => [
-        'name' => env('IOI_CITY_MALL_SALES_FILE_NOTIFICATION_NAME'), // Notification name
-        'email' => env('IOI_CITY_MALL_SALES_FILE_NOTIFICATION_EMAIL'), // Notification email
+        'name' => env('IOI_CITY_MALL_SALES_FILE_NOTIFICATION_NAME'), // Receiver's Name
+        'email' => env('IOI_CITY_MALL_SALES_FILE_NOTIFICATION_EMAIL'), // Receiver's E-mail
     ],
 
     /*
