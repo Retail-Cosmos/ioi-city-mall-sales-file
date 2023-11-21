@@ -8,8 +8,10 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileNotification;
 use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileService;
 
 class SalesFileGenerationCommand extends Command
@@ -43,7 +45,7 @@ class SalesFileGenerationCommand extends Command
     public function handle(): int
     {
         try {
-            [$logChannel] = $this->validateCommunicationChannels();
+            [$notificationConfig, $logChannel] = $this->validateCommunicationChannels();
 
             [$date] = $this->validateArguments();
 
@@ -57,6 +59,8 @@ class SalesFileGenerationCommand extends Command
 
             Log::channel($logChannel)->info($message);
 
+            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'success', messages: "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk"));
+
             $this->comment($message);
 
             return 0;
@@ -68,13 +72,17 @@ class SalesFileGenerationCommand extends Command
                 Log::channel($logChannel)->error($message);
             }
 
+            if (! empty($notificationConfig) && ! empty($date)) {
+                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'error', messages: "Sales File Generation Failed for the date of {$date} - {$e->getMessage()}"));
+            }
+
             $this->error($e->getMessage(), 1);
 
             return 1;
         }
     }
 
-    protected function validateCommunicationChannels()
+    protected function validateCommunicationChannels(): array
     {
         $config = config('ioi-city-mall-sales-file');
 
