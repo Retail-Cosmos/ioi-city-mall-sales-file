@@ -9,16 +9,9 @@ use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 
 class SalesFileUploaderService
 {
-    protected $config;
-
-    public function __construct(array $config)
+    public function uploadFile(array $config, string $filePath): void
     {
-        $this->config = $config;
-    }
-
-    public function uploadFile(string $filePath): void
-    {
-        $sftpConfig = $this->config['sftp'];
+        $sftpConfig = $config['sftp'];
 
         $filesystem = new Filesystem(new SftpAdapter(
             new SftpConnectionProvider(
@@ -32,7 +25,7 @@ class SalesFileUploaderService
 
         $remoteFilePath = basename($filePath);
 
-        $fileContent = Storage::disk($this->config['disk_to_use'])->get($filePath);
+        $fileContent = Storage::disk($config['disk_to_use'])->get($filePath);
 
         $filesystem->write($remoteFilePath, $fileContent);
     }

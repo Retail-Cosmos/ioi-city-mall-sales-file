@@ -25,6 +25,16 @@ class SalesFileUploadCommand extends Command
      */
     protected $description = 'Upload generated Sales files for IOI City Mall';
 
+    public SalesFileUploaderService $salesFileUploaderService;
+
+    public function __construct(SalesFileUploaderService $salesFileUploaderService)
+    {
+        parent::__construct();
+
+        $this->salesFileUploaderService = $salesFileUploaderService;
+
+    }
+
     /**
      * Execute the console command.
      */
@@ -40,12 +50,11 @@ class SalesFileUploadCommand extends Command
             $pendingFiles = Storage::disk($disk)->files('pending_to_upload');
 
             if (! empty($pendingFiles)) {
-                $uploader = new SalesFileUploaderService($config);
 
                 foreach ($pendingFiles as $file) {
 
                     $this->comment("Uploading File {$file} to SFTP Server");
-                    $uploader->uploadFile($file);
+                    $this->salesFileUploaderService->uploadFile($config, $file);
                     $this->comment("File {$file} has been uploaded to SFTP Server");
 
                     $this->comment("Moving file to {$file} uploaded folder");

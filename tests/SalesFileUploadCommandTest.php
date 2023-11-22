@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
+use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileUploaderService;
 
 it('throws an error if disk_to_use is missing or empty', function () {
 
@@ -44,3 +46,36 @@ it('throws an error if SFTP array values are missing or empty', function (string
     'Password' => ['password', 'SFTP Config array must have a valid password.'],
     'Path' => ['path', 'SFTP Config array must have a valid file(s) upload path.'],
 ]);
+
+it('uploads sales files to SFTP server', function () {
+
+    config()->set('ioi-city-mall-sales-file',
+        [
+            'disk_to_use' => 'local',
+            'sftp' => [
+                'ip_address' => '127.0.0.0',
+                'port' => 22,
+                'username' => 'mock-username',
+                'password' => 'mock-password',
+                'path' => '/path/to/sftp/upload',
+            ],
+        ]);
+
+    Storage::fake('local');
+
+    $storage = Storage::disk('local');
+
+    $storage->put('pending_to_upload/some-file.txt', 'some content goes here');
+
+    $config = config('ioi-city-mall-sales-file');
+
+    $serviceMock = mock(SalesFileUploaderService::class);
+
+    $serviceMock->shouldReceive('uploadFile')->withArgs([$config, 'pending_to_upload/some-file.txt'])->andReturnNull();
+
+    $this->app->instance(SalesFileUploaderService::class, $serviceMock);
+
+    Artisan::call('upload:ioi-city-mall-sales-files');
+
+    expect($storage->exists('uploaded/some-file.txt'))->toBeTrue();
+});
