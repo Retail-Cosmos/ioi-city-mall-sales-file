@@ -185,7 +185,7 @@ class SalesFileGenerationCommand extends Command
         $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
 
         $stores->each(function ($store) use ($config, $date, $salesDataService) {
-            $salesData = $salesDataService->handle($date, $store['identifier']);
+            $salesData = $salesDataService->handle($store['identifier'], $date);
 
             if (! $salesData instanceof Collection) {
                 throw new Exception('A collection must be returned from the handle() method of the class.');

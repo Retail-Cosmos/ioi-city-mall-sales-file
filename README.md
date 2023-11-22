@@ -44,8 +44,8 @@ $schedule->command('generate:ioi-city-mall-sales-files')->daily();
 >    - `identifier` - To generate a sales file for a specific connection only. (It must exist in the config file inside one of the stores)
 
 2. Create a new class `IOICityMallSalesDataService` in the `App/Services` namespace and add a `handle()` method in it. The package will call this method to get the sales data. The method receives the following parameters:
-    - `identifier` - as per your config per store (there can be multiple stores)
-    - `date` - YYYY-MM-DD format
+    - `identifier` (string) - as per your config per store (there can be multiple stores)
+    - `date` (string) - YYYY-MM-DD format
 
 3. This is the main part of the implementation. You need to add code for this method in a way that it fetches the sales data for the specified store for the specified date and returns a collection of sales. The keys need to be:
 ```
