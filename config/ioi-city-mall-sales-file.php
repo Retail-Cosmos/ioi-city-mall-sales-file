@@ -47,7 +47,7 @@ return [
     | can set the log channel name to keep track of file generation events.
     |
     */
-    'log_channel_for_file_generation' => env('IOI_CITY_MALL_FILE_GENERARION_LOG_CHANNEL', 'stack'),
+    'log_channel_for_file_generation' => env('IOI_CITY_MALL_FILE_GENERATION_LOG_CHANNEL', 'stack'),
 
     /*
     |--------------------------------------------------------------------------
