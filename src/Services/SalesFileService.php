@@ -25,7 +25,7 @@ class SalesFileService
         $allHours = array_fill_keys(range(0, 23), []);
 
         $groupedSales = $salesData->groupBy(function ($sale) {
-            return Carbon::parse($sale['happened_at'])->format('H');
+            return (int) Carbon::parse($sale['happened_at'])->format('H');
         });
 
         $mergedData = array_replace($allHours, $groupedSales->toArray());
