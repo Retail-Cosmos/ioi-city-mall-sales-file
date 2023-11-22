@@ -69,7 +69,7 @@ it('uploads sales files to SFTP server', function () {
 
     $config = config('ioi-city-mall-sales-file');
 
-    $serviceMock = mock(SalesFileUploaderService::class);
+    $serviceMock = Mockery::mock(SalesFileUploaderService::class);
 
     $serviceMock->shouldReceive('uploadFile')->withArgs([$config, 'pending_to_upload/some-file.txt'])->andReturnNull();
 
