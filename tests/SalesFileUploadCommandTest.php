@@ -47,45 +47,66 @@ it('throws an error if SFTP array values are missing or empty', function (string
     'Path' => ['path', 'SFTP Config array must have a valid file(s) upload path.'],
 ]);
 
-it('uploads sales files to SFTP server', function () {
+describe('successes', function () {
 
-    config()->set('ioi-city-mall-sales-file',
-        [
-            'disk_to_use' => 'local',
-            'sftp' => [
-                'ip_address' => '127.0.0.0',
-                'port' => 22,
-                'username' => 'mock-username',
-                'password' => 'mock-password',
-                'path' => '/path/to/sftp/upload',
-            ],
-        ]);
+    beforeEach(function (): void {
+        config()->set('ioi-city-mall-sales-file',
+            [
+                'disk_to_use' => 'local',
+                'sftp' => [
+                    'ip_address' => '127.0.0.0',
+                    'port' => 22,
+                    'username' => 'mock-username',
+                    'password' => 'mock-password',
+                    'path' => '/path/to/sftp/upload',
+                ],
+            ]);
 
-    Storage::fake('local');
+        Storage::fake('local');
+    });
 
-    $storage = Storage::disk('local');
+    it('uploads sales files to SFTP server', function () {
 
-    $filePath = 'pending_to_upload/some-file.txt';
+        $storage = Storage::disk('local');
 
-    $storage->put($filePath, 'some content goes here');
+        $filePath = 'pending_to_upload/some-file.txt';
 
-    $config = config('ioi-city-mall-sales-file');
+        $storage->put($filePath, 'some content goes here');
 
-    $serviceMock = Mockery::mock(SalesFileUploaderService::class);
+        $config = config('ioi-city-mall-sales-file');
 
-    $serviceMock->shouldReceive('uploadFile')->withArgs([$config, 'pending_to_upload/some-file.txt'])->andReturnNull();
+        $serviceMock = Mockery::mock(SalesFileUploaderService::class);
 
-    $this->app->instance(SalesFileUploaderService::class, $serviceMock);
+        $serviceMock->shouldReceive('uploadFile')->withArgs([$config, $filePath])->andReturnNull();
 
-    Artisan::call('upload:ioi-city-mall-sales-files');
+        $this->app->instance(SalesFileUploaderService::class, $serviceMock);
 
-    $output = Artisan::output();
+        Artisan::call('upload:ioi-city-mall-sales-files');
 
-    expect($output)->toContain("Uploading File {$filePath} to SFTP Server");
-    expect($output)->toContain("File {$filePath} has been uploaded to SFTP Server");
-    expect($output)->toContain("Moving file to {$filePath} uploaded folder");
-    expect($output)->toContain("File {$filePath} uploaded successfully");
-    expect($output)->toContain('Sales files uploaded successfully.');
+        $output = Artisan::output();
 
-    expect($storage->exists('uploaded/some-file.txt'))->toBeTrue();
+        expect($output)->toContain("Uploading File {$filePath} to SFTP Server");
+        expect($output)->toContain("File {$filePath} has been uploaded to SFTP Server");
+        expect($output)->toContain("Moving file to {$filePath} uploaded folder");
+        expect($output)->toContain("File {$filePath} uploaded successfully");
+        expect($output)->toContain('Sales files uploaded successfully.');
+
+        expect($storage->exists('uploaded/some-file.txt'))->toBeTrue();
+    });
+
+    it('shows no sales records found for upload', function () {
+
+        $storage = Storage::disk('local');
+
+        expect($storage->files('pending_to_upload'))->toBeEmpty();
+
+        Artisan::call('upload:ioi-city-mall-sales-files');
+
+        $output = Artisan::output();
+
+        expect($output)->toContain('No sales files found for upload');
+
+        expect($storage->files('uploaded'))->toBeEmpty();
+    });
+
 });
