@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileNotification;
+use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileGenerationNotification;
 use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileService;
 
 class SalesFileGenerationCommand extends Command
@@ -59,7 +59,7 @@ class SalesFileGenerationCommand extends Command
 
             Log::channel($logChannel)->info($message);
 
-            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'success', messages: "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk"));
+            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'success', messages: "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk"));
 
             $this->comment($message);
 
@@ -73,7 +73,7 @@ class SalesFileGenerationCommand extends Command
             }
 
             if (! empty($notificationConfig) && ! empty($date)) {
-                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileNotification(status: 'error', messages: "Sales File Generation Failed for the date of {$date} - {$e->getMessage()}"));
+                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'error', messages: "Sales File Generation Failed for the date of {$date} - {$e->getMessage()}"));
             }
 
             $this->error($e->getMessage(), 1);
