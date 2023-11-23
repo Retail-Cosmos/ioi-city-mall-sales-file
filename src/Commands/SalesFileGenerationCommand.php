@@ -53,7 +53,7 @@ class SalesFileGenerationCommand extends Command
 
             [$stores] = $this->validateOptions();
 
-            $this->generateSalesFiles($config, collect($stores), $date);
+            $this->generateSalesFiles($config, $stores, $date);
 
             $message = 'Sales files generated successfully.';
 
@@ -147,7 +147,11 @@ class SalesFileGenerationCommand extends Command
             throw new Exception($validator->errors()->first());
         }
 
-        return [$config['stores']];
+        $validatedOptions = $validator->validated();
+
+        $stores = $validatedOptions['identifier'] ? collect($config['stores'])->where('identifier', $validatedOptions['identifier']) : collect($config['stores']);
+
+        return [$stores];
     }
 
     private function validateAndGetConfig(): array
