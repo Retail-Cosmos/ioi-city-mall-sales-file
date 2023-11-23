@@ -82,13 +82,16 @@ You may provide all the numbers in negative in case of refunds. As per the speci
 
 ### File Upload (SFTP)
 
-// WIP
+There is only one step to start the file uploads.
 
-## Testing
+Add a [scheduler](https://laravel.com/docs/10.x/scheduling) in your Laravel project to call the command `upload:ioi-city-mall-sales-files` daily at 12:30 AM. It uploads all the files from the `pending_to_upload` directory via SFTP as per your config and moves those files to the `uploaded` directory.
 
-```bash
-composer test
+```php
+$schedule->command('upload:ioi-city-mall-sales-files')->dailyAt('00:30');
 ```
+
+The complete log of the uploaded files gets prepared and stored as per your log channel config. An email notification is also sent as per your notifications config.
+
 
 ## Changelog
 
