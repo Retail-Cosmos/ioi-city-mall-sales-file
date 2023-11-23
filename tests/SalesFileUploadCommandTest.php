@@ -65,7 +65,9 @@ it('uploads sales files to SFTP server', function () {
 
     $storage = Storage::disk('local');
 
-    $storage->put('pending_to_upload/some-file.txt', 'some content goes here');
+    $filePath = 'pending_to_upload/some-file.txt';
+
+    $storage->put($filePath, 'some content goes here');
 
     $config = config('ioi-city-mall-sales-file');
 
@@ -76,6 +78,14 @@ it('uploads sales files to SFTP server', function () {
     $this->app->instance(SalesFileUploaderService::class, $serviceMock);
 
     Artisan::call('upload:ioi-city-mall-sales-files');
+
+    $output = Artisan::output();
+
+    expect($output)->toContain("Uploading File {$filePath} to SFTP Server");
+    expect($output)->toContain("File {$filePath} has been uploaded to SFTP Server");
+    expect($output)->toContain("Moving file to {$filePath} uploaded folder");
+    expect($output)->toContain("File {$filePath} uploaded successfully");
+    expect($output)->toContain('Sales files uploaded successfully.');
 
     expect($storage->exists('uploaded/some-file.txt'))->toBeTrue();
 });
