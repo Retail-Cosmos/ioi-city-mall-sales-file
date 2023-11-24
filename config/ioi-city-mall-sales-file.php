@@ -77,4 +77,26 @@ return [
     */
     'first_file_generation_date' => '2023-01-01',
 
+    /*
+    |--------------------------------------------------------------------------
+    | "Enable File Generation" Flag
+    |--------------------------------------------------------------------------
+    |
+    | This flag is used to enable or disable Sales File Generation. By default, it will
+    | be true.
+    |
+    */
+    'enable_file_generation' => env('IOI_CITY_MALL_ENABLE_FILE_GENERATION', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | "Enable File Upload" Flag
+    |--------------------------------------------------------------------------
+    |
+    | This flag is used to enable or disable Sales File Upload. By default, it will
+    | be true.
+    |
+    */
+    'enable_file_upload' => env('IOI_CITY_MALL_ENABLE_FILE_UPLOAD', true),
+
 ];
