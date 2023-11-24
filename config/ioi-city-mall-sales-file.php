@@ -4,31 +4,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Store Configurations
-    |--------------------------------------------------------------------------
-    |
-    | Define store-specific settings here. Each store should have an entry
-    | containing the store identifier, machine ID, and SST registration status.
-    | * Note: 'identifier' and 'machine_id' must be unique across multiple store configs.
-    | Following is a sample configuration for your reference:
-    |
-    |   'stores' => [
-    |       [
-    |           'identifier' => 'store_1',
-    |           'machine_id' => env('IOI_CITY_MALL_MACHINE_ID_1'),
-    |           'sst_registered' => true,
-    |       ],
-    |       [
-    |           'identifier' => 'store_2',
-    |           'machine_id' => env('IOI_CITY_MALL_MACHINE_ID_2'),
-    |           'sst_registered' => false,
-    |       ],
-    ]   ],
-    */
-    'stores' => [],
-
-    /*
-    |--------------------------------------------------------------------------
     | Storage Disk
     |--------------------------------------------------------------------------
     |

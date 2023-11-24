@@ -21,7 +21,7 @@ class SalesFileGenerationCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'generate:ioi-city-mall-sales-files {date?} {--identifier=}';
+    protected $signature = 'generate:ioi-city-mall-sales-files {date?} {--store_identifier=}';
 
     /**
      * The console command description.
@@ -51,7 +51,7 @@ class SalesFileGenerationCommand extends Command
 
             $config = $this->validateAndGetConfig();
 
-            [$stores] = $this->validateOptions();
+            $stores = $this->validateAndGetStores();
 
             $this->generateSalesFiles($config, $stores, $date);
 
@@ -131,47 +131,52 @@ class SalesFileGenerationCommand extends Command
         return [$date];
     }
 
-    protected function validateOptions(): array
+    protected function validateAndGetStores(): Collection
     {
-        $config = config('ioi-city-mall-sales-file');
+        $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
 
-        $identifiers = array_column($config['stores'], 'identifier');
+        $storeIdentifier = $this->option('store_identifier');
 
-        $validator = Validator::make($this->options(), [
-            'identifier' => ['nullable', Rule::in($identifiers)],
+        $stores = $salesDataService->storesList($storeIdentifier);
+
+        if (! isset($stores)) {
+            throw new Exception('The stores array is either missing or empty. Please ensure it has proper values.');
+        }
+        $input = [
+            'stores' => $stores->values()->all(),
+            'store_identifier' => $storeIdentifier,
+        ];
+        $validator = Validator::make($input, [
+            'stores' => ['required', 'array'],
+            'stores.*.store_identifier' => ['required', 'distinct'],
+            'stores.*.machine_id' => ['required', 'distinct'],
+            'stores.*.sst_registered' => ['required', 'boolean'],
+            'store_identifier' => ['nullable', Rule::in(array_column($input['stores'], 'store_identifier'))],
         ], [
-            'identifier' => "No stores found with the identifier {$this->option('identifier')}",
+            'stores.*.store_identifier.distinct' => 'Duplicate Store identifiers found. Please ensure that each store has a unique store_identifier.',
+            'stores.*.store_identifier.required' => 'store_identifier is either missing or empty in one of the items. Please ensure it is properly configured.',
+            'stores.*.machine_id.required' => 'Machine ID is either missing or empty in one of the items. Please ensure it is properly configured.',
+            'stores.*.machine_id.distinct' => 'Duplicate Machine IDs found. Please ensure that each store has a unique Machine ID.',
+            'stores.required' => 'The Stores array cannot be empty.',
+            'store_identifier.in' => "No Stores found with the store_identifier {$this->option('store_identifier')}",
         ]);
 
         if ($validator->fails()) {
             throw new Exception($validator->errors()->first());
         }
 
-        $validatedOptions = $validator->validated();
-
-        $stores = $validatedOptions['identifier'] ? collect($config['stores'])->where('identifier', $validatedOptions['identifier']) : collect($config['stores']);
-
-        return [$stores];
+        return $stores;
     }
 
     private function validateAndGetConfig(): array
     {
         $validator = Validator::make(config('ioi-city-mall-sales-file'), [
-            'stores' => ['required', 'array'],
-            'stores.*.identifier' => ['required', 'distinct'],
-            'stores.*.machine_id' => ['required', 'distinct'],
-            'stores.*.sst_registered' => ['required', 'boolean'],
             'disk_to_use' => ['required'],
             'sftp' => ['required'],
             'log_channel_for_file_upload' => ['required'],
             'first_file_generation_date' => ['required', 'date_format:"Y-m-d"'],
 
         ], [
-            'stores.*.identifier.distinct' => 'Duplicate Store identifiers found. Please ensure that each store has a unique identifier.',
-            'stores.*.identifier.required' => 'Identifier is either missing or empty in one of the items. Please ensure it is properly configured.',
-            'stores.*.machine_id.required' => 'Machine ID is either missing or empty in one of the items. Please ensure it is properly configured.',
-            'stores.*.machine_id.distinct' => 'Duplicate Machine IDs found. Please ensure that each store has a unique Machine ID.',
-            'stores.required' => 'The stores array in configuration file is either missing or empty. Please ensure it is properly configured.',
             'disk_to_use.required' => 'The disk_to_use key in configuration file is not set. Please ensure it is properly configured.',
             'first_file_generation_date.required' => 'The first_file_generation_date key in configuration file is not set. Please ensure it is properly configured.',
             'first_file_generation_date.date_format' => 'Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.',
@@ -189,7 +194,7 @@ class SalesFileGenerationCommand extends Command
         $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
 
         $stores->each(function ($store) use ($config, $date, $salesDataService) {
-            $salesData = $salesDataService->handle($store['identifier'], $date);
+            $salesData = $salesDataService->salesData($store['store_identifier'], $date);
 
             if (! $salesData instanceof Collection) {
                 throw new Exception('A collection must be returned from the handle() method of the class.');
