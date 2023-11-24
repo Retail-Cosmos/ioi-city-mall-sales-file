@@ -5,7 +5,7 @@ namespace RetailCosmos\IoiCityMallSalesFile\Notifications;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SalesFileNotification extends Notification
+class SalesFileGenerationNotification extends Notification
 {
     private $status;
 

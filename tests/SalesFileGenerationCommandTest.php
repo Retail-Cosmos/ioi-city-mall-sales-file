@@ -5,7 +5,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
-use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileNotification;
+use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileGenerationNotification;
 use RetailCosmos\IoiCityMallSalesFile\Tests\Services\IOICityMallSalesDataServiceMock;
 
 beforeEach(function (): void {
@@ -147,7 +147,7 @@ describe('errors', function () {
 
     afterEach(function (): void {
         Notification::assertSentOnDemand(
-            SalesFileNotification::class,
+            SalesFileGenerationNotification::class,
             function ($notification, $channels, $notifiable) {
                 return $notifiable->routes['mail'] == $this->email
                 && $notification->getStatus() === 'error';
@@ -293,7 +293,7 @@ describe('successes', function () {
 
     afterEach(function (): void {
         Notification::assertSentOnDemand(
-            SalesFileNotification::class,
+            SalesFileGenerationNotification::class,
             function ($notification, $channels, $notifiable) {
                 return $notifiable->routes['mail'] == $this->email
                 && $notification->getStatus() === 'success';
