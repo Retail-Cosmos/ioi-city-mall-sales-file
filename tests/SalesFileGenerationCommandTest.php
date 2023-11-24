@@ -16,7 +16,7 @@ beforeEach(function (): void {
 });
 
 describe('Configuration Checks', function () {
-    it('throws an error if the configuration file is missing or empty', function () {
+    it('will not execute the command if configuration file is missing or empty', function () {
 
         config()->offsetUnset('ioi-city-mall-sales-file');
 
@@ -24,9 +24,23 @@ describe('Configuration Checks', function () {
 
         Notification::assertNothingSent();
 
-        expect(Artisan::output())->toContain('The configuration file is either missing or empty. Please ensure it is properly configured.');
-
+        expect(Artisan::output())->toBeEmpty();
     });
+
+    it('will not execute the command if file generation flag is disabled', function () {
+
+        config()->set('ioi-city-mall-sales-file.enable_file_generation', false);
+
+        Artisan::call('generate:ioi-city-mall-sales-files');
+
+        expect(Artisan::output())->toBeEmpty();
+
+        Notification::assertNothingSent();
+    });
+
+});
+
+describe('Configuration Checks with Notifications', function () {
 
     it('throws an error if disk_to_use is missing or empty', function () {
 
@@ -56,6 +70,16 @@ describe('Configuration Checks', function () {
 
         expect(Artisan::output())->toContain('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
 
+    });
+
+    afterEach(function (): void {
+        Notification::assertSentOnDemand(
+            SalesFileGenerationNotification::class,
+            function ($notification, $channels, $notifiable) {
+                return $notifiable->routes['mail'] == $this->email
+                && $notification->getStatus() === 'error';
+            }
+        );
     });
 });
 

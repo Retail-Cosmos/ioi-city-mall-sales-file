@@ -11,7 +11,23 @@ beforeEach(function (): void {
     Notification::fake();
 });
 
-describe('errors', function () {
+describe('Configuration Checks', function () {
+
+    it('will not execute the command if file upload flag is disabled', function () {
+
+        config()->set('ioi-city-mall-sales-file.enable_file_upload', false);
+
+        Artisan::call('upload:ioi-city-mall-sales-files');
+
+        expect(Artisan::output())->toBeEmpty();
+
+        Notification::assertNothingSent();
+
+    });
+
+});
+
+describe('Configuration Checks with Notifications', function () {
 
     it('throws an error if disk_to_use is missing or empty', function () {
 
@@ -67,7 +83,7 @@ describe('errors', function () {
     });
 });
 
-describe('successes', function () {
+describe('Success Scenarios', function () {
 
     beforeEach(function (): void {
         config()->set('ioi-city-mall-sales-file',
@@ -85,6 +101,7 @@ describe('successes', function () {
                     'name' => 'Admin',
                     'email' => 'admin@example.com',
                 ],
+                'enable_file_upload' => true,
             ]);
 
         Storage::fake('local');
@@ -150,4 +167,8 @@ describe('successes', function () {
         );
     });
 
+});
+
+afterEach(function (): void {
+    Mockery::close();
 });
