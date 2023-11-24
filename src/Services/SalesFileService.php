@@ -5,6 +5,7 @@ namespace RetailCosmos\IoiCityMallSalesFile\Services;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use RetailCosmos\IoiCityMallSalesFile\Enums\PaymentType;
 
 class SalesFileService
 {
@@ -44,9 +45,7 @@ class SalesFileService
             'discount' => $sales->sum('discount'),
         ];
 
-        $paymentTypes = [
-            'cash', 'tng', 'visa', 'mastercard', 'amex', 'voucher', 'others',
-        ];
+        $paymentTypes = PaymentType::getValues();
 
         foreach ($paymentTypes as $paymentType) {
             $hourlySales['payments'][$paymentType] = $sales->sum("payments.$paymentType");
