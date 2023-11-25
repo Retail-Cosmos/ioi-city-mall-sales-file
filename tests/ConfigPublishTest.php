@@ -18,7 +18,6 @@ it('has all required configuration variables', function () {
     expect($config)->toBeArray();
 
     $requiredKeys = [
-        'stores',
         'disk_to_use',
         'log_channel_for_file_generation',
         'sftp',
