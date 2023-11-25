@@ -1,48 +1,12 @@
 <?php
 
-dataset('sales_data_x2', [
-    [
-        fakeSalesData(2),
-    ],
-]);
-
-dataset('sales_data_x5', [
-    [
-        fakeSalesData(5),
-    ],
-]);
-
 dataset('static_sales_data_1', [
     [
-        sampleSalesData2(),
+        collect(sampleSalesData2()),
     ],
 ]);
 
-function fakeSalesData($times = 1): array
-{
-    $fakeDataArray = [];
-
-    for ($i = 0; $i < $times; $i++) {
-        $fakeDataArray[] = [
-            'happened_at' => now()->subDay()->format('Y-m-d').' '.fake()->time(),
-            'net_amount' => fake()->numberBetween(1, 1000),
-            'discount' => fake()->numberBetween(0, 100),
-            'SST' => fake()->numberBetween(0, 100),
-            'payments' => [
-                'cash' => fake()->numberBetween(0, 100),
-                'tng' => fake()->numberBetween(0, 100),
-                'visa' => fake()->numberBetween(0, 100),
-                'mastercard' => fake()->numberBetween(0, 100),
-                'amex' => fake()->numberBetween(0, 100),
-                'voucher' => fake()->numberBetween(0, 100),
-                'others' => fake()->numberBetween(0, 100),
-            ],
-        ];
-    }
-
-    return $fakeDataArray;
-}
-
+// sales data of date 2023-01-01
 function sampleSalesData1(): array
 {
     return [
@@ -79,6 +43,7 @@ function sampleSalesData1(): array
     ];
 }
 
+// sales data of date 2023-10-31
 function sampleSalesData2(): array
 {
     return [

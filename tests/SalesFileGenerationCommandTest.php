@@ -6,82 +6,29 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileGenerationNotification;
-use RetailCosmos\IoiCityMallSalesFile\Tests\Services\IOICityMallSalesDataServiceMock;
 
 beforeEach(function (): void {
     $this->email = config('ioi-city-mall-sales-file.notifications.email');
     Notification::fake();
+
+    $this->serviceMock = Mockery::mock(IOICityMallSalesDataService::class);
+    $this->app->instance(IOICityMallSalesDataService::class, $this->serviceMock);
 });
 
-it('throws an error if the configuration file is missing or empty', function () {
+describe('Configuration Checks', function () {
+    it('throws an error if the configuration file is missing or empty', function () {
 
-    config()->offsetUnset('ioi-city-mall-sales-file');
-
-    Artisan::call('generate:ioi-city-mall-sales-files');
-
-    Notification::assertNothingSent();
-
-    expect(Artisan::output())->toContain('The configuration file is either missing or empty. Please ensure it is properly configured.');
-
-});
-
-describe('errors', function () {
-
-    it('throws an error if stores is missing or empty', function () {
-
-        config()->offsetUnset('ioi-city-mall-sales-file.stores');
+        config()->offsetUnset('ioi-city-mall-sales-file');
 
         Artisan::call('generate:ioi-city-mall-sales-files');
 
-        expect(Artisan::output())->toContain('The stores array in configuration file is either missing or empty. Please ensure it is properly configured.');
+        Notification::assertNothingSent();
+
+        expect(Artisan::output())->toContain('The configuration file is either missing or empty. Please ensure it is properly configured.');
 
     });
 
-    it('throws an error if duplicate identifier is found', function () {
-
-        config()->set('ioi-city-mall-sales-file.stores', [
-            [
-                'identifier' => 'store_1',
-                'machine_id' => 11,
-                'sst_registered' => true,
-            ],
-            [
-                'identifier' => 'store_1',
-                'machine_id' => 22,
-                'sst_registered' => true,
-            ],
-        ]);
-
-        Artisan::call('generate:ioi-city-mall-sales-files');
-
-        expect(Artisan::output())->toContain('Duplicate Store identifiers found. Please ensure that each store has a unique identifier.');
-
-    });
-
-    it('throws an error if duplicate Machine ID is found', function () {
-
-        config()->set('ioi-city-mall-sales-file.stores', [
-            [
-                'identifier' => 'store_1',
-                'machine_id' => 22,
-                'sst_registered' => true,
-            ],
-            [
-                'identifier' => 'store_2',
-                'machine_id' => 22,
-                'sst_registered' => true,
-            ],
-        ]);
-
-        Artisan::call('generate:ioi-city-mall-sales-files');
-
-        expect(Artisan::output())->toContain('Duplicate Machine IDs found. Please ensure that each store has a unique Machine ID.');
-
-    });
-
-    it('throws an error if disk_to_use is missing or empty', function ($storesData) {
-
-        config()->set('ioi-city-mall-sales-file.stores', $storesData);
+    it('throws an error if disk_to_use is missing or empty', function () {
 
         config()->offsetUnset('ioi-city-mall-sales-file.disk_to_use');
 
@@ -89,11 +36,9 @@ describe('errors', function () {
 
         expect(Artisan::output())->toContain('The disk_to_use key in configuration file is not set. Please ensure it is properly configured.');
 
-    })->with('stores_data_x2');
+    });
 
-    it('throws an error if first_file_generation_date is missing or empty', function ($storesData) {
-
-        config()->set('ioi-city-mall-sales-file.stores', $storesData);
+    it('throws an error if first_file_generation_date is missing or empty', function () {
 
         config()->offsetUnset('ioi-city-mall-sales-file.first_file_generation_date');
 
@@ -101,11 +46,9 @@ describe('errors', function () {
 
         expect(Artisan::output())->toContain('The first_file_generation_date key in configuration file is not set. Please ensure it is properly configured.');
 
-    })->with('stores_data_x2');
+    });
 
-    it('throws an error if first_file_generation_date date format is mis-configured', function ($storesData) {
-
-        config()->set('ioi-city-mall-sales-file.stores', $storesData);
+    it('throws an error if first_file_generation_date date format is mis-configured', function () {
 
         config()->set('ioi-city-mall-sales-file.first_file_generation_date', '2022-22-10');
 
@@ -113,27 +56,81 @@ describe('errors', function () {
 
         expect(Artisan::output())->toContain('Invalid date format for first_file_generation_date. Please ensure it is properly configured in the "YYYY-MM-DD" format.');
 
+    });
+});
+
+describe('Error Scenarios', function () {
+
+    it('throws an error if stores is missing or empty', function () {
+
+        $this->serviceMock->shouldReceive('storesList')->andReturn(null);
+
+        Artisan::call('generate:ioi-city-mall-sales-files');
+
+        expect(Artisan::output())->toContain('The stores array is either missing or empty. Please ensure it has proper values.');
+
+    });
+
+    it('throws an error if duplicate store_identifier is found', function () {
+
+        $stores = collect([
+            [
+                'store_identifier' => 'store_1',
+                'machine_id' => 11,
+                'sst_registered' => true,
+            ],
+            [
+                'store_identifier' => 'store_1',
+                'machine_id' => 22,
+                'sst_registered' => true,
+            ],
+        ]);
+
+        $this->serviceMock->shouldReceive('storesList')->andReturn($stores);
+
+        Artisan::call('generate:ioi-city-mall-sales-files');
+
+        expect(Artisan::output())->toContain('Duplicate Store identifiers found. Please ensure that each store has a unique store_identifier.');
+
+    });
+
+    it('throws an error if duplicate Machine ID is found', function () {
+
+        $stores = collect([
+            [
+                'store_identifier' => 'store_1',
+                'machine_id' => 22,
+                'sst_registered' => true,
+            ],
+            [
+                'store_identifier' => 'store_2',
+                'machine_id' => 22,
+                'sst_registered' => true,
+            ],
+        ]);
+
+        $this->serviceMock->shouldReceive('storesList')->andReturn($stores);
+
+        Artisan::call('generate:ioi-city-mall-sales-files');
+
+        expect(Artisan::output())->toContain('Duplicate Machine IDs found. Please ensure that each store has a unique Machine ID.');
+
+    });
+
+    it('throws an error if undefined store_identifier is used', function ($stores) {
+
+        $this->serviceMock->shouldReceive('storesList')->andReturn($stores);
+
+        Artisan::call('generate:ioi-city-mall-sales-files', ['--store_identifier' => $store = 'store_no_5442']);
+
+        expect(Artisan::output())->toContain("No Stores found with the store_identifier {$store}");
+
     })->with('stores_data_x2');
 
-    it('throws an error if undefined identifier is used', function ($storesData) {
+    it('throws an error if happened_at date and date argument is not same', function ($stores, $sales) {
 
-        config()->set('ioi-city-mall-sales-file.stores', $storesData);
-
-        Artisan::call('generate:ioi-city-mall-sales-files', ['--identifier' => $store = 'store_22']);
-
-        expect(Artisan::output())->toContain("No stores found with the identifier {$store}");
-
-    })->with('stores_data_x2');
-
-    it('throws an error if happened_at date and date argument is not same', function ($storesData, $salesData) {
-
-        config()->set('ioi-city-mall-sales-file.stores', $storesData);
-
-        $data = $salesData;
-
-        app()->bind(IOICityMallSalesDataService::class, function () use ($data) {
-            return new IOICityMallSalesDataServiceMock($data);
-        });
+        $this->serviceMock->shouldReceive('storesList')->andReturn($stores);
+        $this->serviceMock->shouldReceive('salesData')->andReturn($sales);
 
         Artisan::call('generate:ioi-city-mall-sales-files');
 
@@ -156,7 +153,7 @@ describe('errors', function () {
     });
 });
 
-describe('successes', function () {
+describe('Success Scenarios', function () {
 
     it('generates successful text file with static stores & sales data test', function () {
 
@@ -168,13 +165,12 @@ describe('successes', function () {
 
         for ($i = 0; $i < 2; $i++) {
 
-            config()->set('ioi-city-mall-sales-file.stores', $storesData[$i]);
+            $this->serviceMock = Mockery::mock(IOICityMallSalesDataService::class);
+            $this->app->instance(IOICityMallSalesDataService::class, $this->serviceMock);
 
-            $data = $salesData[$i];
+            $this->serviceMock->shouldReceive('storesList')->andReturn(collect($storesData[$i]));
 
-            app()->bind(IOICityMallSalesDataService::class, function () use ($data) {
-                return new IOICityMallSalesDataServiceMock($data);
-            });
+            $this->serviceMock->shouldReceive('salesData')->andReturn(collect($salesData[$i]));
 
             Artisan::call('generate:ioi-city-mall-sales-files', ['date' => $dates[$i]]);
 
@@ -210,13 +206,9 @@ describe('successes', function () {
 
         $stores = sampleStoresData1();
 
-        config()->set('ioi-city-mall-sales-file.stores', $stores);
+        $this->serviceMock->shouldReceive('storesList')->andReturn(collect($stores));
 
-        $data = collect([]);
-
-        app()->bind(IOICityMallSalesDataService::class, function () use ($data) {
-            return new IOICityMallSalesDataServiceMock($data);
-        });
+        $this->serviceMock->shouldReceive('salesData')->andReturn(collect([]));
 
         $date = '2023-06-01';
 
@@ -249,7 +241,7 @@ describe('successes', function () {
 
     });
 
-    it('generates successful text file with specific identifier & date', function () {
+    it('generates successful text file with specific store_identifier & date', function () {
 
         $salesData = sampleSalesData2();
 
@@ -257,13 +249,11 @@ describe('successes', function () {
 
         $date = '2023-10-31';
 
-        config()->set('ioi-city-mall-sales-file.stores', $storesData);
+        $this->serviceMock->shouldReceive('storesList')->andReturn(collect($storesData));
 
-        app()->bind(IOICityMallSalesDataService::class, function () use ($salesData) {
-            return new IOICityMallSalesDataServiceMock($salesData);
-        });
+        $this->serviceMock->shouldReceive('salesData')->andReturn(collect($salesData));
 
-        Artisan::call('generate:ioi-city-mall-sales-files', ['date' => $date, '--identifier' => 'store_22']);
+        Artisan::call('generate:ioi-city-mall-sales-files', ['date' => $date, '--store_identifier' => 'store_22']);
 
         $output = Artisan::output();
 
@@ -300,4 +290,8 @@ describe('successes', function () {
             }
         );
     });
+});
+
+afterEach(function (): void {
+    Mockery::close();
 });
