@@ -32,7 +32,7 @@ The functionality is divided into two parts. The first part is the [File Generat
 
 Please follow these steps for the file generation.
 
-1. Add a [scheduler](https://laravel.com/docs/10.x/scheduling) in your Laravel project to call the command `generate:ioi-city-mall-sales-files` daily at midnight. It generates the sales file for the previous day for each store as per the config file.
+1. Add a [scheduler](https://laravel.com/docs/10.x/scheduling) in your Laravel project to call the command `generate:ioi-city-mall-sales-files` daily at midnight. It generates the sales file for the previous day for each store as returned from the application.
 
 ```php
 $schedule->command('generate:ioi-city-mall-sales-files')->daily();
@@ -41,13 +41,27 @@ $schedule->command('generate:ioi-city-mall-sales-files')->daily();
 > [!TIP]
 > If you wish to generate a specific sales file, you may pass the following options to the command:
 >    - `date` - Date in the YYYY-MM-DD format to generate a sales file for a specific date.
->    - `identifier` - To generate a sales file for a specific connection only. (It must exist in the config file inside one of the stores)
+>    - `store_identifier` - To generate a sales file for a specific store only.
 
-2. Create a new class `IOICityMallSalesDataService` in the `App/Services` namespace and add a `handle()` method in it. The package will call this method to get the sales data. The method receives the following parameters:
-    - `identifier` (string) - as per your config per store (there can be multiple stores)
+2. Create a new class `IOICityMallSalesDataService` in the `App/Services` namespace and add a `storesList()` method in it. It should return the collection of stores. The keys need to be:
+    - `store_identifier` (String)
+    - `machine_id` (String. Machine ID as received from the IOI City Mall)
+    - `sst_registered` (Boolean)
+
+When you pass a `store_identifier` as an option to the sales file generation command, the package passes it as a parameter to the `storesList()` method. So your method may look like:
+
+```php
+public function storesList(string $storeIdentifier = null): Collection
+{
+    // Return a collection of arrays containing the keys and values as specified above.
+}
+```
+
+3. Add a `salesData()` method in the `IOICityMallSalesDataService` class. The package will call this method to get the sales data. The method receives the following parameters:
+    - `store_identifier` (string) - as returned from the `storesList()` method or passed to the sales file generation command as an option.
     - `date` (string) - YYYY-MM-DD format
 
-3. This is the main part of the implementation. You need to add code for this method in a way that it fetches the sales data for the specified store for the specified date and returns a collection of sales. The keys need to be:
+This is the main part of the implementation. You need to add code for this method in a way that it fetches the sales data for the specified store for the specified date and returns a collection of sales. The keys need to be:
 ```
     - 'happened_at' (Date and time of the sale)
     - 'net_amount' (Total amount of the sale after discount and before SST)
@@ -62,6 +76,16 @@ $schedule->command('generate:ioi-city-mall-sales-files')->daily();
         - 'voucher'
         - 'others'
 ```
+
+Your method may look like:
+
+```php
+public function salesData(string $storeIdentifier, string $date): Collection
+{
+    // Return a collection of arrays containing the keys and values as specified above.
+}
+```
+
 > [!TIP]
 > Take a note that you need to return sales for all the counters/registers of a store. The Mall expects the sales of all the counters to be combined in the file.
 
