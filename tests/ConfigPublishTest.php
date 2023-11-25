@@ -24,6 +24,8 @@ it('has all required configuration variables', function () {
         'log_channel_for_file_upload',
         'notifications',
         'first_file_generation_date',
+        'enable_file_generation',
+        'enable_file_upload',
     ];
 
     foreach ($requiredKeys as $key) {
