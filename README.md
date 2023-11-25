@@ -91,6 +91,10 @@ public function salesData(string $storeIdentifier, string $date): Collection
 
 :rocket: And that is it. The scheduler calls the command every day and the package generates a sales file and puts it into the the filesystem as per the config. Next, you may follow the steps for the [File Upload](#file-upload-sftp) part.
 
+#### Disable File Generation
+
+The package provides an .env variable `IOI_CITY_MALL_ENABLE_FILE_GENERATION` in case you wish to disable the file generation. If this .env variable is set to `false`, the file will not be generated even when the command is run.
+
 #### Notes about generated sales files
 - The generated files are stored as per your config disk. There are two directories inside it: `pending_to_upload` and `uploaded` (These two directories are auto-generated if they don’t exist)
 - The complete log of the generated files gets prepared and stored as per your log channel config. An email notification is also sent as per your notifications config.
@@ -115,6 +119,10 @@ $schedule->command('upload:ioi-city-mall-sales-files')->dailyAt('00:30');
 ```
 
 The complete log of the uploaded files gets prepared and stored as per your log channel config. An email notification is also sent as per your notifications config.
+
+#### Disable File Upload (SFTP)
+
+The package provides an .env variable `IOI_CITY_MALL_ENABLE_FILE_UPLOAD` in case you wish to disable the file upload. If this .env variable is set to `false`, the file will not be uploaded even when the command is run.
 
 
 ## Changelog
