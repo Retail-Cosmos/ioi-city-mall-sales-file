@@ -42,6 +42,9 @@ class SalesFileUploadCommand extends Command
      */
     public function handle(): int
     {
+        if (! config('ioi-city-mall-sales-file.enable_file_upload')) {
+            return 1;
+        }
 
         try {
             [$notificationConfig, $logChannel] = $this->validateCommunicationChannels();
@@ -94,7 +97,7 @@ class SalesFileUploadCommand extends Command
                 Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'error', messages: $message));
             }
 
-            $this->error($e->getMessage(), 1);
+            $this->error($message, 1);
 
             return 1;
         }
@@ -142,6 +145,7 @@ class SalesFileUploadCommand extends Command
             'sftp.path' => ['required'],
             'notifications' => [],
             'log_channel_for_file_upload' => [],
+            'enable_file_upload' => [],
         ], [
             'disk_to_use.required' => 'The disk_to_use key in configuration file is not set. Please ensure it is properly configured.',
             'sftp' => 'SFTP Config array is required.',

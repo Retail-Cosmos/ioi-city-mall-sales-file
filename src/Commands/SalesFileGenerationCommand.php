@@ -44,6 +44,10 @@ class SalesFileGenerationCommand extends Command
      */
     public function handle(): int
     {
+        if (! config('ioi-city-mall-sales-file.enable_file_generation')) {
+            return 1;
+        }
+
         try {
             [$notificationConfig, $logChannel] = $this->validateCommunicationChannels();
 
