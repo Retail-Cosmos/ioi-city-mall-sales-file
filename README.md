@@ -57,6 +57,9 @@ public function storesList(string $storeIdentifier = null): Collection
 }
 ```
 
+> [!TIP]
+> If you return a blank collection, the command does not generate any sales file and just logs a message.
+
 3. Add a `salesData()` method in the `IOICityMallSalesDataService` class. The package will call this method to get the sales data. The method receives the following parameters:
     - `store_identifier` (string) - as returned from the `storesList()` method or passed to the sales file generation command as an option.
     - `date` (string) - YYYY-MM-DD format

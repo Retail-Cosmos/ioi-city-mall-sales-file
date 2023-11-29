@@ -316,6 +316,24 @@ describe('Success Scenarios', function () {
     });
 });
 
+describe('Informational Scenarios', function () {
+
+    it('shows no stores returned message due to empty stores.', function () {
+
+        $this->serviceMock->shouldReceive('storesList')->andReturn(collect([]));
+
+        Artisan::call('generate:ioi-city-mall-sales-files');
+
+        $output = Artisan::output();
+
+        expect($output)->toContain('No stores returned. Command completes without file generation.');
+
+        Notification::assertNothingSent();
+
+    });
+
+});
+
 afterEach(function (): void {
     Mockery::close();
 });
