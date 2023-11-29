@@ -62,6 +62,7 @@ class SalesFileGenerationCommand extends Command
 
                 $this->comment($message);
                 Log::channel($logChannel)->info($message);
+                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'info', messages: $message));
 
                 return 0;
             }
