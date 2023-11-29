@@ -1,24 +1,35 @@
 <?php
 
-declare(strict_types=1);
-
 namespace RetailCosmos\IoiCityMallSalesFile\Enums;
 
-use BenSampo\Enum\Enum;
-
-final class PaymentType extends Enum
+enum PaymentType: string
 {
-    const CASH = 'cash';
+    case CASH = 'cash';
 
-    const TNG = 'tng';
+    case TNG = 'tng';
 
-    const VISA = 'visa';
+    case VISA = 'visa';
 
-    const MASTERCARD = 'mastercard';
+    case MASTERCARD = 'mastercard';
 
-    const AMEX = 'amex';
+    case AMEX = 'amex';
 
-    const VOUCHER = 'voucher';
+    case VOUCHER = 'voucher';
 
-    const OTHERS = 'others';
+    case OTHERS = 'others';
+
+    public static function names(): array
+    {
+        return array_column(self::cases(), 'name');
+    }
+
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+
+    public static function array(): array
+    {
+        return array_combine(self::values(), self::names());
+    }
 }

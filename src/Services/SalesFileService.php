@@ -45,7 +45,7 @@ class SalesFileService
             'discount' => $sales->sum('discount'),
         ];
 
-        $paymentTypes = PaymentType::getValues();
+        $paymentTypes = PaymentType::values();
 
         foreach ($paymentTypes as $paymentType) {
             $hourlySales['payments'][$paymentType] = $sales->sum("payments.$paymentType");
