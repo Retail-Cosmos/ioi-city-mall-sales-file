@@ -328,17 +328,10 @@ describe('Informational Scenarios', function () {
 
         expect($output)->toContain('No stores returned. Command completes without file generation.');
 
+        Notification::assertNothingSent();
+
     });
 
-    afterEach(function (): void {
-        Notification::assertSentOnDemand(
-            SalesFileGenerationNotification::class,
-            function ($notification, $channels, $notifiable) {
-                return $notifiable->routes['mail'] == $this->email
-                && $notification->getStatus() === 'info';
-            }
-        );
-    });
 });
 
 afterEach(function (): void {
