@@ -57,6 +57,15 @@ class SalesFileGenerationCommand extends Command
 
             $stores = $this->validateAndGetStores();
 
+            if ($stores->isEmpty()) {
+                $message = 'No stores returned. Command completes without file generation.';
+
+                $this->comment($message);
+                Log::channel($logChannel)->info($message);
+
+                return 0;
+            }
+
             $this->generateSalesFiles($config, $stores, $date);
 
             $message = 'Sales files generated successfully.';
@@ -151,7 +160,7 @@ class SalesFileGenerationCommand extends Command
             'store_identifier' => $storeIdentifier,
         ];
         $validator = Validator::make($input, [
-            'stores' => ['required', 'array'],
+            'stores' => ['nullable', 'array'],
             'stores.*.store_identifier' => ['required', 'distinct'],
             'stores.*.machine_id' => ['required', 'distinct'],
             'stores.*.sst_registered' => ['required', 'boolean'],
