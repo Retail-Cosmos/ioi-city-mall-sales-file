@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use RetailCosmos\IoiCityMallSalesFile\Enums\PaymentType;
 use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileGenerationNotification;
 use RetailCosmos\IoiCityMallSalesFile\Services\SalesFileService;
 
@@ -213,6 +214,8 @@ class SalesFileGenerationCommand extends Command
                 throw new Exception('A collection must be returned from the handle() method of the class.');
             }
 
+            $salesData = $this->validateAndGetSales($salesData, $date);
+
             $validSalesDataCount = $salesData->where(function ($item) use ($date) {
                 return Carbon::parse($item['happened_at'])->isSameDay($date);
             })->count();
@@ -225,5 +228,36 @@ class SalesFileGenerationCommand extends Command
 
             $this->info($file.' has been created');
         });
+    }
+
+    protected function validateAndGetSales(Collection $sales, string $date): Collection
+    {
+        $afterCurrentDate = Carbon::parse($date)->startOfDay()->toDateTimeString();
+        $beforeCurrentDate = Carbon::parse($date)->endOfDay()->toDateTimeString();
+        $paymentTypes = implode(',', PaymentType::values());
+        $validator = Validator::make($sales->values()->all(), [
+            '*.happened_at' => ['required', 'date', 'date_format:Y-m-d H:i:s', "after_or_equal:{$afterCurrentDate}", "before_or_equal:{$beforeCurrentDate}"],
+            '*.net_amount' => ['required', 'numeric', 'decimal:0,2'],
+            '*.discount' => ['required', 'decimal:0,2'],
+            '*.SST' => ['required', 'decimal:0,2'],
+            '*.payments' => ['required', "array:{$paymentTypes}"],
+            '*.payments.cash' => ['required', 'decimal:0,2'],
+            '*.payments.tng' => ['required', 'decimal:0,2'],
+            '*.payments.visa' => ['required', 'decimal:0,2'],
+            '*.payments.mastercard' => ['required', 'decimal:0,2'],
+            '*.payments.amex' => ['required', 'decimal:0,2'],
+            '*.payments.voucher' => ['required', 'decimal:0,2'],
+            '*.payments.others' => ['required', 'decimal:0,2'],
+        ], [
+            '*.happened_at.date_equals' => "Sales data :index.happened_at must be the date {$date} only. Sales from other dates are not allowed.",
+            '*.payments.array' => "The :attribute must contain only the keys - {$paymentTypes}.",
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
+        }
+
+        return $sales;
+
     }
 }
