@@ -48,7 +48,7 @@ function sampleSalesData2(): array
 {
     return [
         [
-            'happened_at' => '2023-10-31 11:15 AM',
+            'happened_at' => '2023-10-31 11:15:00',
             'net_amount' => 80,
             'discount' => 20,
             'SST' => 0,
@@ -63,7 +63,7 @@ function sampleSalesData2(): array
             ],
         ],
         [
-            'happened_at' => '2023-10-31 11:40 AM',
+            'happened_at' => '2023-10-31 11:40:00',
             'net_amount' => 80,
             'discount' => 20,
             'SST' => 0,
@@ -78,7 +78,7 @@ function sampleSalesData2(): array
             ],
         ],
         [
-            'happened_at' => '2023-10-31 12:30 PM',
+            'happened_at' => '2023-10-31 12:30:00',
             'net_amount' => 130,
             'discount' => 10,
             'SST' => 0,
@@ -93,7 +93,7 @@ function sampleSalesData2(): array
             ],
         ],
         [
-            'happened_at' => '2023-10-31 02:45 PM',
+            'happened_at' => '2023-10-31 14:45:00',
             'net_amount' => 165,
             'discount' => 25,
             'SST' => 0,
@@ -108,7 +108,7 @@ function sampleSalesData2(): array
             ],
         ],
         [
-            'happened_at' => '2023-10-31 04:00 PM',
+            'happened_at' => '2023-10-31 16:00:00',
             'net_amount' => 110,
             'discount' => 15,
             'SST' => 0,

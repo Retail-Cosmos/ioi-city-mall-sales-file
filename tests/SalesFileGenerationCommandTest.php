@@ -162,9 +162,23 @@ describe('Error Scenarios', function () {
 
         $previousDaysDate = now()->subDay()->toDateString();
 
-        expect($output)->toContain("Sales data must have records of the date {$previousDaysDate} only. Sales from other dates are not allowed.");
+        expect($output)->toContain("Sales data 0.happened_at must be the date {$previousDaysDate} only. Sales from other dates are not allowed.");
 
     })->with('stores_data_x2')->with('static_sales_data_1');
+
+    it('throws an error if any of the payment keys are missing', function ($data) {
+
+        $this->serviceMock->shouldReceive('storesList')->andReturn(collect($data['stores']));
+
+        $this->serviceMock->shouldReceive('salesData')->andReturn(collect($data['sales']));
+
+        Artisan::call('generate:ioi-city-mall-sales-files', ['date' => '2023-10-31']);
+
+        $output = Artisan::output();
+
+        expect($output)->toContain($data['errorMessage']);
+
+    })->with('incomplete_data');
 
     afterEach(function (): void {
         Notification::assertSentOnDemand(
@@ -337,3 +351,84 @@ describe('Informational Scenarios', function () {
 afterEach(function (): void {
     Mockery::close();
 });
+
+dataset('incomplete_data', [
+    [
+        [
+            'stores' => sampleStoresData1(),
+            'sales' => [
+                [
+                    'happened_at' => '2023-10-31 11:15:00',
+                    'net_amount' => 80,
+                    'discount' => 20,
+                    'SST' => 0,
+                ],
+            ],
+            'errorMessage' => 'The 0.payments field is required.',
+        ],
+    ],
+    [
+        [
+            'stores' => sampleStoresData1(),
+            'sales' => [
+                [
+                    'happened_at' => '2023-10-31 11:15:00',
+                    'net_amount' => 80,
+                    'discount' => 20,
+                    'SST' => 0,
+                    'payments' => [
+                        'cash' => 50,
+                    ],
+                ],
+            ],
+            'errorMessage' => 'The 0.payments.tng field is required.',
+        ],
+    ],
+    [
+        [
+            'stores' => sampleStoresData1(),
+            'sales' => [
+                [
+                    'happened_at' => '2023-10-31 11:15:00',
+                    'net_amount' => 80,
+                    'discount' => 20,
+                    'SST' => 0,
+                    'payments' => [
+                        'cash' => 50,
+                        'tng' => 0,
+                        'visa' => 30,
+                        'mastercard' => 0,
+                        'amex' => 0,
+                        'voucher' => 0,
+                        'others' => 0,
+                        'some_other_payment_type_not_present_in_enum' => 11,
+                    ],
+                ],
+            ],
+            'errorMessage' => 'The 0.payments must contain only the keys - cash,tng,visa,mastercard,amex,voucher,others.',
+        ],
+    ],
+    [
+        [
+            'stores' => sampleStoresData1(),
+            'sales' => [
+                [
+                    'happened_at' => '2023-10-31 11:15:00',
+                    'net_amount' => 80,
+                    'discount' => 20,
+                    'SST' => 0,
+                    'payments' => [
+                        'cash' => 50,
+                        'tng' => 0,
+                        'visa' => 30,
+                        'mastercard' => 0,
+                        'amex' => 0,
+                        'voucher' => 0,
+                        'others' => 'invalid value',
+                    ],
+                ],
+            ],
+            'errorMessage' => 'The 0.payments.others field must have 0-2 decimal places.',
+        ],
+    ],
+]);

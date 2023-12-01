@@ -252,6 +252,8 @@ class SalesFileGenerationCommand extends Command
 
         $validator = Validator::make($sales->values()->all(), $validations, [
             '*.happened_at.date_equals' => "Sales data :index.happened_at must be the date {$date} only. Sales from other dates are not allowed.",
+            '*.happened_at.after_or_equal' => "Sales data :index.happened_at must be the date {$date} only. Sales from other dates are not allowed.",
+            '*.happened_at.before_or_equal' => "Sales data :index.happened_at must be the date {$date} only. Sales from other dates are not allowed.",
             '*.payments.array' => "The :attribute must contain only the keys - {$paymentTypesString}.",
         ]);
 
