@@ -234,23 +234,25 @@ class SalesFileGenerationCommand extends Command
     {
         $afterCurrentDate = Carbon::parse($date)->startOfDay()->toDateTimeString();
         $beforeCurrentDate = Carbon::parse($date)->endOfDay()->toDateTimeString();
-        $paymentTypes = implode(',', PaymentType::values());
-        $validator = Validator::make($sales->values()->all(), [
+
+        $paymentTypes = PaymentType::values();
+        $paymentTypesString = implode(',', $paymentTypes);
+
+        $validations = [
             '*.happened_at' => ['required', 'date', 'date_format:Y-m-d H:i:s', "after_or_equal:{$afterCurrentDate}", "before_or_equal:{$beforeCurrentDate}"],
             '*.net_amount' => ['required', 'numeric', 'decimal:0,2'],
             '*.discount' => ['required', 'decimal:0,2'],
             '*.SST' => ['required', 'decimal:0,2'],
-            '*.payments' => ['required', "array:{$paymentTypes}"],
-            '*.payments.cash' => ['required', 'decimal:0,2'],
-            '*.payments.tng' => ['required', 'decimal:0,2'],
-            '*.payments.visa' => ['required', 'decimal:0,2'],
-            '*.payments.mastercard' => ['required', 'decimal:0,2'],
-            '*.payments.amex' => ['required', 'decimal:0,2'],
-            '*.payments.voucher' => ['required', 'decimal:0,2'],
-            '*.payments.others' => ['required', 'decimal:0,2'],
-        ], [
+            '*.payments' => ['required', "array:{$paymentTypesString}"],
+        ];
+
+        foreach ($paymentTypes as $paymentType) {
+            $validations['*.payments.'.$paymentType] = ['required', 'decimal:0,2'];
+        }
+
+        $validator = Validator::make($sales->values()->all(), $validations, [
             '*.happened_at.date_equals' => "Sales data :index.happened_at must be the date {$date} only. Sales from other dates are not allowed.",
-            '*.payments.array' => "The :attribute must contain only the keys - {$paymentTypes}.",
+            '*.payments.array' => "The :attribute must contain only the keys - {$paymentTypesString}.",
         ]);
 
         if ($validator->fails()) {
