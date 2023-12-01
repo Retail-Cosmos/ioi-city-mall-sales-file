@@ -257,6 +257,16 @@ class SalesFileGenerationCommand extends Command
             '*.payments.array' => "The :attribute must contain only the keys - {$paymentTypesString}.",
         ]);
 
+        $validator->after(function ($validator) use ($sales) {
+
+            $sales->each(function ($sale, $index) use ($validator) {
+                if (isset($sale['payments']) && array_sum($sale['payments']) != $sale['net_amount']) {
+                    $validator->errors()->add("{$index}.net_amount", "The sum of {$index}.payments must be equal to the {$index}.net_amount.");
+                }
+            });
+
+        });
+
         if ($validator->fails()) {
             throw new Exception($validator->errors()->first());
         }

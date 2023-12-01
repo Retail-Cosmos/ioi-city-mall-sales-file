@@ -431,4 +431,27 @@ dataset('incomplete_data', [
             'errorMessage' => 'The 0.payments.others field must have 0-2 decimal places.',
         ],
     ],
+    [
+        [
+            'stores' => sampleStoresData1(),
+            'sales' => [
+                [
+                    'happened_at' => '2023-10-31 11:15:00',
+                    'net_amount' => 11,
+                    'discount' => 20,
+                    'SST' => 0,
+                    'payments' => [
+                        'cash' => 50,
+                        'tng' => 0,
+                        'visa' => 30,
+                        'mastercard' => 0,
+                        'amex' => 0,
+                        'voucher' => 0,
+                        'others' => 0,
+                    ],
+                ],
+            ],
+            'errorMessage' => 'The sum of 0.payments must be equal to the 0.net_amount.',
+        ],
+    ],
 ]);
