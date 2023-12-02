@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use RetailCosmos\IoiCityMallSalesFile\Enums\PaymentType;
 use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileGenerationNotification;
 
 beforeEach(function (): void {
@@ -377,7 +378,7 @@ dataset('incomplete_data', [
                     'discount' => 20,
                     'SST' => 0,
                     'payments' => [
-                        'cash' => 50,
+                        PaymentType::CASH->value => 50,
                     ],
                 ],
             ],
@@ -394,13 +395,13 @@ dataset('incomplete_data', [
                     'discount' => 20,
                     'SST' => 0,
                     'payments' => [
-                        'cash' => 50,
-                        'tng' => 0,
-                        'visa' => 30,
-                        'mastercard' => 0,
-                        'amex' => 0,
-                        'voucher' => 0,
-                        'others' => 0,
+                        PaymentType::CASH->value => 50,
+                        PaymentType::TNG->value => 0,
+                        PaymentType::VISA->value => 30,
+                        PaymentType::MASTERCARD->value => 0,
+                        PaymentType::AMEX->value => 0,
+                        PaymentType::VOUCHER->value => 0,
+                        PaymentType::OTHERS->value => 0,
                         'some_other_payment_type_not_present_in_enum' => 11,
                     ],
                 ],
@@ -418,13 +419,13 @@ dataset('incomplete_data', [
                     'discount' => 20,
                     'SST' => 0,
                     'payments' => [
-                        'cash' => 50,
-                        'tng' => 0,
-                        'visa' => 30,
-                        'mastercard' => 0,
-                        'amex' => 0,
-                        'voucher' => 0,
-                        'others' => 'invalid value',
+                        PaymentType::CASH->value => 50,
+                        PaymentType::TNG->value => 0,
+                        PaymentType::VISA->value => 30,
+                        PaymentType::MASTERCARD->value => 0,
+                        PaymentType::AMEX->value => 0,
+                        PaymentType::VOUCHER->value => 0,
+                        PaymentType::OTHERS->value => 'invalid value',
                     ],
                 ],
             ],
@@ -441,13 +442,13 @@ dataset('incomplete_data', [
                     'discount' => 20,
                     'SST' => 0,
                     'payments' => [
-                        'cash' => 50,
-                        'tng' => 0,
-                        'visa' => 30,
-                        'mastercard' => 0,
-                        'amex' => 0,
-                        'voucher' => 0,
-                        'others' => 0,
+                        PaymentType::CASH->value => 50,
+                        PaymentType::TNG->value => 0,
+                        PaymentType::VISA->value => 30,
+                        PaymentType::MASTERCARD->value => 0,
+                        PaymentType::AMEX->value => 0,
+                        PaymentType::VOUCHER->value => 0,
+                        PaymentType::OTHERS->value => 0,
                     ],
                 ],
             ],
