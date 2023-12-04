@@ -48,14 +48,29 @@ $schedule->command('generate:ioi-city-mall-sales-files')->daily();
     - `machine_id` (String. Machine ID as received from the IOI City Mall)
     - `sst_registered` (Boolean)
 
-When you pass a `store_identifier` as an option to the sales file generation command, the package passes it as a parameter to the `storesList()` method. So your method may look like:
+When you pass a `store_identifier` as an option to the sales file generation command, the package passes it as a parameter to the `storesList()` method.
+
+<details>
+<summary>Click here to see the example code for the storesList() method</summary>
 
 ```php
 public function storesList(string $storeIdentifier = null): Collection
 {
-    // Return a collection of arrays containing the keys and values as specified above.
+    return collect([
+        [
+            'store_identifier' => 'my_store_46592',
+            'machine_id' => 48623791,
+            'sst_registered' => false,
+        ],
+        [
+            'store_identifier' => 'my_store_97314',
+            'machine_id' => 37196428,
+            'sst_registered' => true,
+        ],
+    ]);
 }
 ```
+</details>
 
 > [!TIP]
 > If you return a blank collection, the command does not generate any sales file and just logs a message.
@@ -80,14 +95,51 @@ This is the main part of the implementation. You need to add code for this metho
         - 'others'
 ```
 
-Your method may look like:
+
+> [!IMPORTANT]
+> You can use `RetailCosmos\IoiCityMallSalesFile\Enums\PaymentType` enum for keys of the payments.
+
+<details>
+<summary>Click here to see the example code for the salesData() method</summary>
 
 ```php
 public function salesData(string $storeIdentifier, string $date): Collection
 {
-    // Return a collection of arrays containing the keys and values as specified above.
+    return collect([
+        [
+            'happened_at' => '2024-01-20 15:41:37',
+            'net_amount' => 100,
+            'discount' => 20,
+            'SST' => 6,
+            'payments' => [
+                PaymentType::CASH->value => 50,
+                PaymentType::TNG->value => 0,
+                PaymentType::VISA->value => 30,
+                PaymentType::MASTERCARD->value => 0,
+                PaymentType::AMEX->value => 0,
+                PaymentType::VOUCHER->value => 0,
+                PaymentType::OTHERS->value => 20,
+            ],
+        ],
+        [
+            'happened_at' => '2024-01-20 16:18:09',
+            'net_amount' => -50,
+            'discount' => -5,
+            'SST' => 0,
+            'payments' => [
+                PaymentType::CASH->value => -50,
+                PaymentType::TNG->value => 0,
+                PaymentType::VISA->value => 0,
+                PaymentType::MASTERCARD->value => 0,
+                PaymentType::AMEX->value => 0,
+                PaymentType::VOUCHER->value => 0,
+                PaymentType::OTHERS->value => 0,
+            ],
+        ],
+    ]);
 }
 ```
+</details>
 
 > [!TIP]
 > Take a note that you need to return sales for all the counters/registers of a store. The Mall expects the sales of all the counters to be combined in the file.
