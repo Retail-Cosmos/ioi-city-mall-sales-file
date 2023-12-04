@@ -320,6 +320,46 @@ describe('Success Scenarios', function () {
 
     });
 
+    it('generates successful text file for refund sales data', function () {
+
+        $salesData = refundSalesData();
+
+        $storesData = [...sampleStoresData1(), ...sampleStoresData2()];
+
+        $date = '2023-10-31';
+
+        $this->serviceMock->shouldReceive('storesList')->andReturn(collect($storesData));
+
+        $this->serviceMock->shouldReceive('salesData')->andReturn(collect($salesData));
+
+        Artisan::call('generate:ioi-city-mall-sales-files', ['date' => $date, '--store_identifier' => 'store_22']);
+
+        $output = Artisan::output();
+
+        $formattedDate = Carbon::parse($date)->format('Ymd');
+
+        $fileName = 'H'.$storesData[1]['machine_id'].'_'.$formattedDate.'.txt';
+
+        $config = config('ioi-city-mall-sales-file.disk_to_use');
+
+        $filePath = 'pending_to_upload/'.$fileName;
+
+        $fileExists = Storage::disk($config)->exists($filePath);
+
+        $fileContents = Storage::disk($config)->get($filePath);
+
+        expect($fileContents)->toMatchSnapshot();
+
+        expect($fileContents)->toContain($storesData[1]['machine_id']);
+
+        expect($fileExists)->toBeTrue();
+
+        expect($output)->toContain("{$fileName} has been created");
+
+        expect($output)->toContain('Sales files generated successfully.');
+
+    });
+
     afterEach(function (): void {
         Notification::assertSentOnDemand(
             SalesFileGenerationNotification::class,

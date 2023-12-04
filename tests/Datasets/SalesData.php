@@ -127,3 +127,55 @@ function sampleSalesData2(): array
     ];
 
 }
+
+function refundSalesData(): array
+{
+    return [
+        [
+            'happened_at' => '2023-10-31 08:15:00',
+            'net_amount' => -100,
+            'discount' => -20,
+            'SST' => 0,
+            'payments' => [
+                PaymentType::CASH->value => -50,
+                PaymentType::TNG->value => 0,
+                PaymentType::VISA->value => 0,
+                PaymentType::MASTERCARD->value => 0,
+                PaymentType::AMEX->value => 0,
+                PaymentType::VOUCHER->value => 0,
+                PaymentType::OTHERS->value => -50,
+            ],
+        ],
+        [
+            'happened_at' => '2023-10-31 18:15:00',
+            'net_amount' => -100,
+            'discount' => -20,
+            'SST' => 0,
+            'payments' => [
+                PaymentType::CASH->value => -50,
+                PaymentType::TNG->value => 0,
+                PaymentType::VISA->value => 0,
+                PaymentType::MASTERCARD->value => 0,
+                PaymentType::AMEX->value => 0,
+                PaymentType::VOUCHER->value => 0,
+                PaymentType::OTHERS->value => -50,
+            ],
+        ],
+        [
+            'happened_at' => '2023-10-31 18:45:00',
+            'net_amount' => -100,
+            'discount' => -20,
+            'SST' => 0,
+            'payments' => [
+                PaymentType::CASH->value => -50,
+                PaymentType::TNG->value => 0,
+                PaymentType::VISA->value => 0,
+                PaymentType::MASTERCARD->value => 0,
+                PaymentType::AMEX->value => 0,
+                PaymentType::VOUCHER->value => 0,
+                PaymentType::OTHERS->value => -50,
+            ],
+        ],
+    ];
+
+}
