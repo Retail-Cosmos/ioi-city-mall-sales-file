@@ -46,6 +46,8 @@ class SalesFileGenerationCommand extends Command
     public function handle(): int
     {
         if (! config('ioi-city-mall-sales-file.enable_file_generation')) {
+            $this->warn('File generation is disabled. Please check your .env file.');
+
             return 1;
         }
 

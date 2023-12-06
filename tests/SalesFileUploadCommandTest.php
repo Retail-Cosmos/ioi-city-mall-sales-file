@@ -19,7 +19,7 @@ describe('Configuration Checks', function () {
 
         Artisan::call('upload:ioi-city-mall-sales-files');
 
-        expect(Artisan::output())->toBeEmpty();
+        expect(Artisan::output())->toContain('File upload is disabled. Please check your .env file.');
 
         Notification::assertNothingSent();
 

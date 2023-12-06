@@ -25,7 +25,7 @@ describe('Configuration Checks', function () {
 
         Notification::assertNothingSent();
 
-        expect(Artisan::output())->toBeEmpty();
+        expect(Artisan::output())->toContain('File generation is disabled. Please check your .env file.');
     });
 
     it('will not execute the command if file generation flag is disabled', function () {
@@ -34,7 +34,7 @@ describe('Configuration Checks', function () {
 
         Artisan::call('generate:ioi-city-mall-sales-files');
 
-        expect(Artisan::output())->toBeEmpty();
+        expect(Artisan::output())->toContain('File generation is disabled. Please check your .env file.');
 
         Notification::assertNothingSent();
     });

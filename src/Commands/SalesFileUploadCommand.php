@@ -43,6 +43,8 @@ class SalesFileUploadCommand extends Command
     public function handle(): int
     {
         if (! config('ioi-city-mall-sales-file.enable_file_upload')) {
+            $this->warn('File upload is disabled. Please check your .env file.');
+
             return 1;
         }
 
