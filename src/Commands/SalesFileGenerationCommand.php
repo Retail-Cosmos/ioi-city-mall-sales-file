@@ -75,7 +75,7 @@ class SalesFileGenerationCommand extends Command
 
             Log::channel($logChannel)->info($message);
 
-            if (!empty($notificationConfig['email'])) {
+            if (! empty($notificationConfig['email'])) {
                 Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'success', messages: "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk"));
             }
 

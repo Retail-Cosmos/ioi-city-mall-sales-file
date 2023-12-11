@@ -74,7 +74,7 @@ class SalesFileUploadCommand extends Command
 
                 Log::channel($logChannel)->info($message);
 
-                if (!empty($notificationConfig['email'])) {
+                if (! empty($notificationConfig['email'])) {
                     Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'success', messages: 'Sales File Uploaded Successfully to the SFTP Server'));
                 }
 
@@ -82,7 +82,7 @@ class SalesFileUploadCommand extends Command
             } else {
                 $message = 'No sales files found for upload.';
 
-                if (!empty($notificationConfig['email'])) {
+                if (! empty($notificationConfig['email'])) {
                     Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'info', messages: $message));
                 }
 
