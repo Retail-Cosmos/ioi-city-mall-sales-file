@@ -167,6 +167,17 @@ describe('Success Scenarios', function () {
         );
     });
 
+    it('file upload works even if the notification config is not set.', function () {
+        config()->set('ioi-city-mall-sales-file.notifications.email', null);
+        config()->set('ioi-city-mall-sales-file.notifications.name', null);
+
+        Artisan::call('upload:ioi-city-mall-sales-files');
+
+        $output = Artisan::output();
+        expect($output)->toContain('No sales files found for upload');
+
+        Notification::assertNothingSent();
+    });
 });
 
 afterEach(function (): void {

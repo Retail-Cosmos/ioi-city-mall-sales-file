@@ -74,13 +74,17 @@ class SalesFileUploadCommand extends Command
 
                 Log::channel($logChannel)->info($message);
 
-                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'success', messages: 'Sales File Uploaded Successfully to the SFTP Server'));
+                if (! empty($notificationConfig['email'])) {
+                    Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'success', messages: 'Sales File Uploaded Successfully to the SFTP Server'));
+                }
 
                 $this->comment($message);
             } else {
                 $message = 'No sales files found for upload.';
 
-                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'info', messages: $message));
+                if (! empty($notificationConfig['email'])) {
+                    Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'info', messages: $message));
+                }
 
                 Log::channel($logChannel)->info($message);
 
@@ -95,7 +99,7 @@ class SalesFileUploadCommand extends Command
                 Log::channel($logChannel)->error($message);
             }
 
-            if (! empty($notificationConfig)) {
+            if (! empty($notificationConfig['email'])) {
                 Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'error', messages: $message));
             }
 
@@ -115,12 +119,10 @@ class SalesFileUploadCommand extends Command
 
         $validator = Validator::make($config, [
             'notifications' => ['required'],
-            'notifications.name' => ['required'],
-            'notifications.email' => ['required', 'email'],
+            'notifications.name' => ['nullable'],
+            'notifications.email' => ['nullable', 'email'],
             'log_channel_for_file_upload' => ['required'],
         ], [
-            'notifications.name.required' => 'Please set name in config notifications array',
-            'notifications.email.required' => 'Please set e-mail in config notifications array',
             'notifications.email.email' => 'Please set valid e-mail in config notifications array',
             'log_channel_for_file_upload.required' => 'Please set the log channel for file upload',
         ]);

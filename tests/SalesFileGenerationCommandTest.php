@@ -387,6 +387,24 @@ describe('Informational Scenarios', function () {
 
     });
 
+    it('file generation works even if the notification config is not set.', function () {
+        config()->set('ioi-city-mall-sales-file.notifications.email', null);
+        config()->set('ioi-city-mall-sales-file.notifications.name', null);
+
+        $stores = sampleStoresData1();
+
+        $this->serviceMock->shouldReceive('storesList')->andReturn(collect($stores));
+
+        $this->serviceMock->shouldReceive('salesData')->andReturn(collect([]));
+
+        Artisan::call('generate:ioi-city-mall-sales-files');
+
+        $output = Artisan::output();
+
+        expect($output)->toContain('Sales files generated successfully.');
+
+        Notification::assertNothingSent();
+    });
 });
 
 afterEach(function (): void {

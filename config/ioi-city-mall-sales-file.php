@@ -57,7 +57,7 @@ return [
     | Notification Settings
     |--------------------------------------------------------------------------
     |
-    | Configure the notification settings for email notifications, including
+    | Optionally, you may configure the notification settings for email notifications, including
     | the receiver's name and email address for sending sales data-related notifications.
     |
     */

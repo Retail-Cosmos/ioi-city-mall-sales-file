@@ -75,7 +75,9 @@ class SalesFileGenerationCommand extends Command
 
             Log::channel($logChannel)->info($message);
 
-            Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'success', messages: "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk"));
+            if (! empty($notificationConfig['email'])) {
+                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'success', messages: "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk"));
+            }
 
             $this->comment($message);
 
@@ -88,7 +90,7 @@ class SalesFileGenerationCommand extends Command
                 Log::channel($logChannel)->error($message);
             }
 
-            if (! empty($notificationConfig) && ! empty($date)) {
+            if (! empty($notificationConfig['email']) && ! empty($date)) {
                 Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'error', messages: "Sales File Generation Failed for the date of {$date} - {$e->getMessage()}"));
             }
 
@@ -108,12 +110,10 @@ class SalesFileGenerationCommand extends Command
 
         $validator = Validator::make($config, [
             'notifications' => ['required'],
-            'notifications.name' => ['required'],
-            'notifications.email' => ['required', 'email'],
+            'notifications.name' => ['nullable'],
+            'notifications.email' => ['nullable', 'email'],
             'log_channel_for_file_generation' => ['required'],
         ], [
-            'notifications.name.required' => 'Please set name in config notifications array',
-            'notifications.email.required' => 'Please set e-mail in config notifications array',
             'notifications.email.email' => 'Please set valid e-mail in config notifications array',
             'log_channel_for_file_generation.required' => 'Please set the log channel for file generation',
         ]);
