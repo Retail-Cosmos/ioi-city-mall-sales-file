@@ -2,19 +2,24 @@
 
 All notable changes to `ioi-city-mall-sales-file` will be documented in this file.
 
+## v1.0.2 - 2024-02-12
+
+No validation error in case of payments total mismatch
+
 ## Unreleased
 
 ### What's Changed
-- Use of enum for the keys of the sale payments instead of strings. (src/Enums/PaymentType.php)
 
+- Use of enum for the keys of the sale payments instead of strings. (src/Enums/PaymentType.php)
 
 ## 1.0.1 - 2023-12-13
 
 ### What's Changed
-- Setting the config values for notifications is optional now.
 
+- Setting the config values for notifications is optional now.
 
 ## 1.0.0 - 2023-11-30
 
 ### What's Changed
+
 - First Release
