@@ -216,7 +216,7 @@ class SalesFileGenerationCommand extends Command
                 throw new Exception('A collection must be returned from the handle() method of the class.');
             }
 
-            $salesData = $this->validateAndGetSales($salesData, $date);
+            $salesData = $this->validateAndGetSales($salesData, $date, $config);
 
             $validSalesDataCount = $salesData->where(function ($item) use ($date) {
                 return Carbon::parse($item['happened_at'])->isSameDay($date);
@@ -232,7 +232,7 @@ class SalesFileGenerationCommand extends Command
         });
     }
 
-    protected function validateAndGetSales(Collection $sales, string $date): Collection
+    protected function validateAndGetSales(Collection $sales, string $date, array $config): Collection
     {
         $afterCurrentDate = Carbon::parse($date)->startOfDay()->toDateTimeString();
         $beforeCurrentDate = Carbon::parse($date)->endOfDay()->toDateTimeString();
@@ -259,14 +259,14 @@ class SalesFileGenerationCommand extends Command
             '*.payments.array' => "The :attribute must contain only the keys - {$paymentTypesString}.",
         ]);
 
-        $validator->after(function ($validator) use ($sales) {
-
-            $sales->each(function ($sale, $index) use ($validator) {
+        $validator->after(function () use ($sales, $config) {
+            $sales->each(function ($sale, $index) use ($config) {
                 if (isset($sale['payments']) && array_sum($sale['payments']) != $sale['net_amount']) {
-                    $validator->errors()->add("{$index}.net_amount", "The sum of {$index}.payments must be equal to the {$index}.net_amount.");
+                    $sumOfPayments = array_sum($sale['payments']);
+                    Log::channel($config['log_channel_for_file_upload'])
+                        ->info("The sum of {$index}.payments ({$sumOfPayments}) must be equal to the {$index}.net_amount{$sale['net_amount']}.");
                 }
             });
-
         });
 
         if ($validator->fails()) {
