@@ -25,6 +25,20 @@ describe('Configuration Checks', function () {
 
     });
 
+    it('will throw error if notifications.enable_failure_notifications_only is not present', function () {
+
+        config()->set('ioi-city-mall-sales-file.notifications', [
+            'email' => 'some@email.com',
+        ]);
+
+        Artisan::call('upload:ioi-city-mall-sales-files');
+
+        expect(Artisan::output())->toContain('An error occurred while uploading sales files: Please indicate whether to enable only failure notifications');
+
+        Notification::assertNothingSent();
+
+    });
+
 });
 
 describe('Configuration Checks with Notifications', function () {
@@ -100,6 +114,7 @@ describe('Success Scenarios', function () {
                 'notifications' => [
                     'name' => 'Admin',
                     'email' => 'admin@example.com',
+                    'enable_failure_notifications_only' => false,
                 ],
                 'enable_file_upload' => true,
             ]);
@@ -142,6 +157,39 @@ describe('Success Scenarios', function () {
                 && $notification->getStatus() === 'success';
             }
         );
+    });
+
+    it('uploads sales files to SFTP server with enabled failure notifications only', function () {
+
+        $storage = Storage::disk('local');
+
+        $filePath = 'pending_to_upload/some-file.txt';
+
+        $storage->put($filePath, 'some content goes here');
+
+        config()->set('ioi-city-mall-sales-file.notifications.enable_failure_notifications_only', true);
+
+        $config = config('ioi-city-mall-sales-file');
+
+        $serviceMock = Mockery::mock(SalesFileUploaderService::class);
+
+        $serviceMock->shouldReceive('uploadFile')->withArgs([$config, $filePath])->andReturnNull();
+
+        $this->app->instance(SalesFileUploaderService::class, $serviceMock);
+
+        Artisan::call('upload:ioi-city-mall-sales-files');
+
+        $output = Artisan::output();
+
+        expect($output)->toContain("Uploading File {$filePath} to SFTP Server");
+        expect($output)->toContain("File {$filePath} has been uploaded to SFTP Server");
+        expect($output)->toContain("Moving file to {$filePath} uploaded folder");
+        expect($output)->toContain("File {$filePath} uploaded successfully");
+        expect($output)->toContain('Sales files uploaded successfully.');
+
+        expect($storage->exists('uploaded/some-file.txt'))->toBeTrue();
+
+        Notification::assertNothingSent();
     });
 
     it('shows no sales records found for upload', function () {
