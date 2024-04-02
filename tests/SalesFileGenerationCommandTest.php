@@ -39,6 +39,20 @@ describe('Configuration Checks', function () {
         Notification::assertNothingSent();
     });
 
+    it('will not execute the command if notifications.enable_failure_notifications_only is not present', function () {
+
+        config()->set('ioi-city-mall-sales-file.notifications', [
+            'email' => 'some@email.com',
+        ]);
+
+        Artisan::call('generate:ioi-city-mall-sales-files');
+
+        expect(Artisan::output())->toContain('Please indicate whether to enable only failure notifications');
+
+        Notification::assertNothingSent();
+
+    });
+
 });
 
 describe('Configuration Checks with Notifications', function () {
@@ -390,6 +404,28 @@ describe('Informational Scenarios', function () {
     it('file generation works even if the notification config is not set.', function () {
         config()->set('ioi-city-mall-sales-file.notifications.email', null);
         config()->set('ioi-city-mall-sales-file.notifications.name', null);
+
+        $stores = sampleStoresData1();
+
+        $this->serviceMock->shouldReceive('storesList')->andReturn(collect($stores));
+
+        $this->serviceMock->shouldReceive('salesData')->andReturn(collect([]));
+
+        Artisan::call('generate:ioi-city-mall-sales-files');
+
+        $output = Artisan::output();
+
+        expect($output)->toContain('Sales files generated successfully.');
+
+        Notification::assertNothingSent();
+    });
+
+    it('does not send success notification when enable_failure_notifications_only is true', function () {
+        config()->set('ioi-city-mall-sales-file.notifications', [
+            'name' => 'Pest Test',
+            'email' => 'test@testmail.com',
+            'enable_failure_notifications_only' => true,
+        ]);
 
         $stores = sampleStoresData1();
 

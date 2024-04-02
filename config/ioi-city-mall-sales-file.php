@@ -64,6 +64,7 @@ return [
     'notifications' => [
         'name' => env('IOI_CITY_MALL_SALES_FILE_NOTIFICATION_NAME'), // Receiver's Name
         'email' => env('IOI_CITY_MALL_SALES_FILE_NOTIFICATION_EMAIL'), // Receiver's E-mail
+        'enable_failure_notifications_only' => env('IOI_CITY_MALL_SALES_FILE_ENABLE_FAILURE_NOTIFICATIONS_ONLY', false), // This flag determines whether only failure notifications should be received. Set to 'true' to receive only failure notifications, 'false' for all notifications.
     ],
 
     /*
