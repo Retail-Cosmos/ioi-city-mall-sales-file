@@ -159,7 +159,7 @@ describe('Success Scenarios', function () {
         );
     });
 
-    it('uploads sales files to SFTP server with enabled failure notifications only', function () {
+    it('uploads sales files to SFTP server when only failure notifications are enabled', function () {
 
         $storage = Storage::disk('local');
 
