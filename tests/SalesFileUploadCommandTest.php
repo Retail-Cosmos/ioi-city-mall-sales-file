@@ -25,7 +25,7 @@ describe('Configuration Checks', function () {
 
     });
 
-    it('will throw error if notifications.enable_failure_notifications_only is not present', function () {
+    it('will throw error if notifications.trigger_failure_notifications_only is not present', function () {
 
         config()->set('ioi-city-mall-sales-file.notifications', [
             'email' => 'some@email.com',
@@ -114,7 +114,7 @@ describe('Success Scenarios', function () {
                 'notifications' => [
                     'name' => 'Admin',
                     'email' => 'admin@example.com',
-                    'enable_failure_notifications_only' => false,
+                    'trigger_failure_notifications_only' => false,
                 ],
                 'enable_file_upload' => true,
             ]);
@@ -159,7 +159,7 @@ describe('Success Scenarios', function () {
         );
     });
 
-    it('uploads sales files to SFTP server without sending success notification when enable_failure_notifications_only is true', function () {
+    it('uploads sales files to SFTP server without sending success notification when trigger_failure_notifications_only is true', function () {
 
         $storage = Storage::disk('local');
 
@@ -167,7 +167,7 @@ describe('Success Scenarios', function () {
 
         $storage->put($filePath, 'some content goes here');
 
-        config()->set('ioi-city-mall-sales-file.notifications.enable_failure_notifications_only', true);
+        config()->set('ioi-city-mall-sales-file.notifications.trigger_failure_notifications_only', true);
 
         $config = config('ioi-city-mall-sales-file');
 
