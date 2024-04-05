@@ -75,7 +75,7 @@ class SalesFileGenerationCommand extends Command
 
             Log::channel($logChannel)->info($message);
 
-            if (! empty($notificationConfig['email']) && ! $notificationConfig['enable_failure_notifications_only']) {
+            if (! empty($notificationConfig['email']) && ! $notificationConfig['trigger_failure_notifications_only']) {
                 Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'success', messages: "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk"));
             }
 
@@ -112,11 +112,11 @@ class SalesFileGenerationCommand extends Command
             'notifications' => ['required'],
             'notifications.name' => ['nullable'],
             'notifications.email' => ['nullable', 'email'],
-            'notifications.enable_failure_notifications_only' => ['required', 'boolean'],
+            'notifications.trigger_failure_notifications_only' => ['required', 'boolean'],
             'log_channel_for_file_generation' => ['required'],
         ], [
             'notifications.email.email' => 'Please set valid e-mail in config notifications array',
-            'notifications.enable_failure_notifications_only.required' => 'Please indicate whether to enable only failure notifications',
+            'notifications.trigger_failure_notifications_only.required' => 'Please indicate whether to enable only failure notifications',
             'log_channel_for_file_generation.required' => 'Please set the log channel for file generation',
         ]);
 

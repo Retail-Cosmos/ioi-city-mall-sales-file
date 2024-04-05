@@ -23,7 +23,7 @@ class TestCase extends Orchestra
     {
         config()->set('ioi-city-mall-sales-file.notifications.name', 'Admin');
         config()->set('ioi-city-mall-sales-file.notifications.email', 'admin@example.com');
-        config()->set('ioi-city-mall-sales-file.notifications.enable_failure_notifications_only', false);
+        config()->set('ioi-city-mall-sales-file.notifications.trigger_failure_notifications_only', false);
         config()->set('database.default', 'testing');
     }
 }

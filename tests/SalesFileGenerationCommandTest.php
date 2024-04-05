@@ -39,7 +39,7 @@ describe('Configuration Checks', function () {
         Notification::assertNothingSent();
     });
 
-    it('will not execute the command if notifications.enable_failure_notifications_only is not present', function () {
+    it('will not execute the command if notifications.trigger_failure_notifications_only is not present', function () {
 
         config()->set('ioi-city-mall-sales-file.notifications', [
             'email' => 'some@email.com',
@@ -420,11 +420,11 @@ describe('Informational Scenarios', function () {
         Notification::assertNothingSent();
     });
 
-    it('does not send success notification when enable_failure_notifications_only is true', function () {
+    it('does not send success notification when trigger_failure_notifications_only is true', function () {
         config()->set('ioi-city-mall-sales-file.notifications', [
             'name' => 'Pest Test',
             'email' => 'test@testmail.com',
-            'enable_failure_notifications_only' => true,
+            'trigger_failure_notifications_only' => true,
         ]);
 
         $stores = sampleStoresData1();

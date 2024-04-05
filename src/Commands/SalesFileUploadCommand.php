@@ -74,7 +74,7 @@ class SalesFileUploadCommand extends Command
 
                 Log::channel($logChannel)->info($message);
 
-                if (! empty($notificationConfig['email'] && ! $notificationConfig['enable_failure_notifications_only'])) {
+                if (! empty($notificationConfig['email'] && ! $notificationConfig['trigger_failure_notifications_only'])) {
                     Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'success', messages: 'Sales File Uploaded Successfully to the SFTP Server'));
                 }
 
@@ -82,7 +82,7 @@ class SalesFileUploadCommand extends Command
             } else {
                 $message = 'No sales files found for upload.';
 
-                if (! empty($notificationConfig['email']) && ! $notificationConfig['enable_failure_notifications_only']) {
+                if (! empty($notificationConfig['email']) && ! $notificationConfig['trigger_failure_notifications_only']) {
                     Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'info', messages: $message));
                 }
 
@@ -121,11 +121,11 @@ class SalesFileUploadCommand extends Command
             'notifications' => ['required'],
             'notifications.name' => ['nullable'],
             'notifications.email' => ['nullable', 'email'],
-            'notifications.enable_failure_notifications_only' => ['required', 'boolean'],
+            'notifications.trigger_failure_notifications_only' => ['required', 'boolean'],
             'log_channel_for_file_upload' => ['required'],
         ], [
             'notifications.email.email' => 'Please set valid e-mail in config notifications array',
-            'notifications.enable_failure_notifications_only.required' => 'Please indicate whether to enable only failure notifications',
+            'notifications.trigger_failure_notifications_only.required' => 'Please indicate whether to enable only failure notifications',
             'log_channel_for_file_upload.required' => 'Please set the log channel for file upload',
         ]);
 
