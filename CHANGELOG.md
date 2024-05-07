@@ -2,6 +2,10 @@
 
 All notable changes to `ioi-city-mall-sales-file` will be documented in this file.
 
+## v1.0.3 - 2024-05-07
+
+Option to trigger failure notifications only
+
 ## v1.0.2 - 2024-02-12
 
 ### What's Changed
