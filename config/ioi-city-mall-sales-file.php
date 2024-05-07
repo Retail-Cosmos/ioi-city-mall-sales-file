@@ -58,13 +58,13 @@ return [
     |--------------------------------------------------------------------------
     |
     | Optionally, you may configure the notification settings for email notifications, including
-    | the receiver's name and email address for sending sales data-related notifications.
+    | the receiver's name and email address for sending notifications.
     |
     */
     'notifications' => [
         'name' => env('IOI_CITY_MALL_SALES_FILE_NOTIFICATION_NAME'), // Receiver's Name
         'email' => env('IOI_CITY_MALL_SALES_FILE_NOTIFICATION_EMAIL'), // Receiver's E-mail
-        'trigger_failure_notifications_only' => env('IOI_CITY_MALL_SALES_FILE_TRIGGER_FAILURE_NOTIFICATIONS_ONLY', false), // This flag determines whether only failure notifications should be received. Set to 'true' to receive only failure notifications, 'false' for all notifications.
+        'trigger_failure_notifications_only' => env('IOI_CITY_MALL_SALES_FILE_TRIGGER_FAILURE_NOTIFICATIONS_ONLY', false), // This flag determines whether only failure notifications should be received. Set to 'true' to receive only failure notifications, 'false' to receive all notifications.
     ],
 
     /*

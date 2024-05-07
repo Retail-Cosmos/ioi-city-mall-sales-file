@@ -152,7 +152,7 @@ The package provides an .env variable `IOI_CITY_MALL_ENABLE_FILE_GENERATION` in 
 
 #### Notes about generated sales files
 - The generated files are stored as per your config disk. There are two directories inside it: `pending_to_upload` and `uploaded` (These two directories are auto-generated if they don’t exist)
-- The complete log of the generated files gets prepared and stored as per your log channel config. An email notification is sent as per your notifications config, if set.
+- The complete log of the generated files gets prepared and stored as per your log channel config. An email notification is sent as per your notifications config, if set. You may choose to receive only failure notifications also.
 
 #### Note about Sale Returns
 
@@ -173,7 +173,7 @@ Add a [scheduler](https://laravel.com/docs/10.x/scheduling) in your Laravel proj
 $schedule->command('upload:ioi-city-mall-sales-files')->dailyAt('00:30');
 ```
 
-The complete log of the uploaded files gets prepared and stored as per your log channel config. An email notification is sent as per your notifications config, if set.
+The complete log of the uploaded files gets prepared and stored as per your log channel config. An email notification is sent as per your notifications config, if set. You may choose to receive only failure notifications also.
 
 #### Disable File Upload (SFTP)
 

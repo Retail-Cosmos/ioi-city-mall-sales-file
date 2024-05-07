@@ -266,7 +266,7 @@ class SalesFileGenerationCommand extends Command
                 if (isset($sale['payments']) && array_sum($sale['payments']) != $sale['net_amount']) {
                     $sumOfPayments = array_sum($sale['payments']);
                     Log::channel($config['log_channel_for_file_upload'])
-                        ->info("The sum of {$index}.payments ({$sumOfPayments}) must be equal to the {$index}.net_amount{$sale['net_amount']}.");
+                        ->info("The sum of {$index}.payments ({$sumOfPayments}) must be equal to the {$index}.net_amount ({$sale['net_amount']}).");
                 }
             });
         });

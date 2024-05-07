@@ -4,13 +4,9 @@ All notable changes to `ioi-city-mall-sales-file` will be documented in this fil
 
 ## v1.0.2 - 2024-02-12
 
-No validation error in case of payments total mismatch
-
-## Unreleased
-
 ### What's Changed
 
-- Use of enum for the keys of the sale payments instead of strings. (src/Enums/PaymentType.php)
+- No validation error in case of payments total mismatch
 
 ## 1.0.1 - 2023-12-13
 
