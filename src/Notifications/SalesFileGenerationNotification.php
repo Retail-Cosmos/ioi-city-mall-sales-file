@@ -16,7 +16,7 @@ class SalesFileGenerationNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $status, string $messages, string $receiverName)
+    public function __construct(string $status, string $messages, ?string $receiverName)
     {
         $this->status = $status;
         $this->messages = $messages;
