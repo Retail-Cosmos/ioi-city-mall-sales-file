@@ -10,6 +10,7 @@ use RetailCosmos\IoiCityMallSalesFile\Notifications\SalesFileGenerationNotificat
 
 beforeEach(function (): void {
     $this->email = config('ioi-city-mall-sales-file.notifications.email');
+    $this->receiverName = config('ioi-city-mall-sales-file.notifications.name');
     Notification::fake();
 
     $this->serviceMock = Mockery::mock(IOICityMallSalesDataService::class);
@@ -91,8 +92,13 @@ describe('Configuration Checks with Notifications', function () {
         Notification::assertSentOnDemand(
             SalesFileGenerationNotification::class,
             function ($notification, $channels, $notifiable) {
-                return $notifiable->routes['mail'] == $this->email
-                && $notification->getStatus() === 'error';
+                return $this->assertNotificationIsSent(
+                    notification: $notification,
+                    notifiable: $notifiable,
+                    expectedEmail: $this->email,
+                    expectedStatus: 'error',
+                    expectedReceiverName: $this->receiverName
+                );
             }
         );
     });
@@ -199,8 +205,13 @@ describe('Error Scenarios', function () {
         Notification::assertSentOnDemand(
             SalesFileGenerationNotification::class,
             function ($notification, $channels, $notifiable) {
-                return $notifiable->routes['mail'] == $this->email
-                && $notification->getStatus() === 'error';
+                return $this->assertNotificationIsSent(
+                    notification: $notification,
+                    notifiable: $notifiable,
+                    expectedEmail: $this->email,
+                    expectedStatus: 'error',
+                    expectedReceiverName: $this->receiverName
+                );
             }
         );
     });
@@ -378,8 +389,13 @@ describe('Success Scenarios', function () {
         Notification::assertSentOnDemand(
             SalesFileGenerationNotification::class,
             function ($notification, $channels, $notifiable) {
-                return $notifiable->routes['mail'] == $this->email
-                && $notification->getStatus() === 'success';
+                return $this->assertNotificationIsSent(
+                    notification: $notification,
+                    notifiable: $notifiable,
+                    expectedEmail: $this->email,
+                    expectedStatus: 'success',
+                    expectedReceiverName: $this->receiverName
+                );
             }
         );
     });
