@@ -92,7 +92,7 @@ describe('Configuration Checks with Notifications', function () {
         Notification::assertSentOnDemand(
             SalesFileGenerationNotification::class,
             function ($notification, $channels, $notifiable) {
-                return $this->assertNotificationIsSent(
+                return $this->assertNotificationDetails(
                     notification: $notification,
                     notifiable: $notifiable,
                     expectedEmail: $this->email,
@@ -205,7 +205,7 @@ describe('Error Scenarios', function () {
         Notification::assertSentOnDemand(
             SalesFileGenerationNotification::class,
             function ($notification, $channels, $notifiable) {
-                return $this->assertNotificationIsSent(
+                return $this->assertNotificationDetails(
                     notification: $notification,
                     notifiable: $notifiable,
                     expectedEmail: $this->email,
@@ -389,7 +389,7 @@ describe('Success Scenarios', function () {
         Notification::assertSentOnDemand(
             SalesFileGenerationNotification::class,
             function ($notification, $channels, $notifiable) {
-                return $this->assertNotificationIsSent(
+                return $this->assertNotificationDetails(
                     notification: $notification,
                     notifiable: $notifiable,
                     expectedEmail: $this->email,

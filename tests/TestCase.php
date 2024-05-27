@@ -27,7 +27,7 @@ class TestCase extends Orchestra
         config()->set('database.default', 'testing');
     }
 
-    public function assertNotificationIsSent(
+    public function assertNotificationDetails(
         $notification,
         $notifiable,
         string $expectedEmail,
