@@ -76,7 +76,9 @@ class SalesFileGenerationCommand extends Command
             Log::channel($logChannel)->info($message);
 
             if (! empty($notificationConfig['email']) && ! $notificationConfig['trigger_failure_notifications_only']) {
-                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'success', messages: "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk"));
+
+                $this->dispatchNotification($notificationConfig, 'success', "Sales File Generated Successfully for the date of {$date} & has been stored to specified disk");
+
             }
 
             $this->comment($message);
@@ -91,7 +93,9 @@ class SalesFileGenerationCommand extends Command
             }
 
             if (! empty($notificationConfig['email']) && ! empty($date)) {
-                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileGenerationNotification(status: 'error', messages: "Sales File Generation Failed for the date of {$date} - {$e->getMessage()}"));
+
+                $this->dispatchNotification($notificationConfig, 'error', "Sales File Generation Failed for the date of {$date} - {$e->getMessage()}");
+
             }
 
             $this->error($e->getMessage(), 1);
@@ -276,6 +280,19 @@ class SalesFileGenerationCommand extends Command
         }
 
         return $sales;
+
+    }
+
+    public function dispatchNotification(array $notificationConfig, string $status, string $messages): void
+    {
+
+        Notification::route('mail', [
+            $notificationConfig['email'] => $notificationConfig['name'],
+        ])->notify(new SalesFileGenerationNotification(
+            status: $status,
+            messages: $messages,
+            receiverName: $notificationConfig['name']
+        ));
 
     }
 }

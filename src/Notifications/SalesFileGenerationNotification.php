@@ -11,13 +11,16 @@ class SalesFileGenerationNotification extends Notification
 
     private $messages;
 
+    private $receiverName;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $status, string $messages)
+    public function __construct(string $status, string $messages, ?string $receiverName)
     {
         $this->status = $status;
         $this->messages = $messages;
+        $this->receiverName = $receiverName;
     }
 
     /**
@@ -37,11 +40,20 @@ class SalesFileGenerationNotification extends Notification
     {
         return (new MailMessage)
             ->subject('IOI City Mall Sales File Generation Notification')
-            ->markdown('ioi-city-mall-sales-file::mail.file-generation', ['status' => $this->status, 'messages' => $this->messages]);
+            ->markdown('ioi-city-mall-sales-file::mail.file-generation', [
+                'status' => $this->status,
+                'messages' => $this->messages,
+                'receiverName' => $this->receiverName,
+            ]);
     }
 
     public function getStatus()
     {
         return $this->status;
+    }
+
+    public function getReceiverName()
+    {
+        return $this->receiverName;
     }
 }

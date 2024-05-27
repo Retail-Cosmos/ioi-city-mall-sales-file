@@ -26,4 +26,23 @@ class TestCase extends Orchestra
         config()->set('ioi-city-mall-sales-file.notifications.trigger_failure_notifications_only', false);
         config()->set('database.default', 'testing');
     }
+
+    public function assertNotificationDetails(
+        $notification,
+        $notifiable,
+        string $expectedEmail,
+        string $expectedStatus,
+        string $expectedReceiverName
+    ): bool {
+        $routeKeys = array_keys($notifiable->routes['mail']);
+        if (count($routeKeys) > 0) {
+            $email = $routeKeys[0];
+
+            return $email === $expectedEmail
+                && $notification->getStatus() === $expectedStatus
+                && $notification->getReceiverName() === $expectedReceiverName;
+        }
+
+        return false;
+    }
 }
