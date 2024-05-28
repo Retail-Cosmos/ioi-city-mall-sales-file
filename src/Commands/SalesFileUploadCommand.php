@@ -75,7 +75,9 @@ class SalesFileUploadCommand extends Command
                 Log::channel($logChannel)->info($message);
 
                 if (! empty($notificationConfig['email'] && ! $notificationConfig['trigger_failure_notifications_only'])) {
-                    Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'success', messages: 'Sales File Uploaded Successfully to the SFTP Server'));
+
+                    $this->dispatchNotification($notificationConfig, 'success', 'Sales File Uploaded Successfully to the SFTP Server');
+
                 }
 
                 $this->comment($message);
@@ -83,7 +85,9 @@ class SalesFileUploadCommand extends Command
                 $message = 'No sales files found for upload.';
 
                 if (! empty($notificationConfig['email']) && ! $notificationConfig['trigger_failure_notifications_only']) {
-                    Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'info', messages: $message));
+
+                    $this->dispatchNotification($notificationConfig, 'info', $message);
+
                 }
 
                 Log::channel($logChannel)->info($message);
@@ -100,7 +104,9 @@ class SalesFileUploadCommand extends Command
             }
 
             if (! empty($notificationConfig['email'])) {
-                Notification::route('mail', $notificationConfig['email'])->notify(new SalesFileUploadNotification(status: 'error', messages: $message));
+
+                $this->dispatchNotification($notificationConfig, 'error', $message);
+
             }
 
             $this->error($message, 1);
@@ -173,5 +179,18 @@ class SalesFileUploadCommand extends Command
     {
         $uploadedPath = str_replace('pending_to_upload', 'uploaded', $filePath);
         Storage::disk($disk)->move($filePath, $uploadedPath);
+    }
+
+    public function dispatchNotification(array $notificationConfig, string $status, string $messages): void
+    {
+
+        Notification::route('mail', [
+            $notificationConfig['email'] => $notificationConfig['name'],
+        ])->notify(new SalesFileUploadNotification(
+            status: $status,
+            messages: $messages,
+            receiverName: $notificationConfig['name']
+        ));
+
     }
 }
