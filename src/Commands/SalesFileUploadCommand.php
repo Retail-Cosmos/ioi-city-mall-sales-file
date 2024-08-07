@@ -150,7 +150,7 @@ class SalesFileUploadCommand extends Command
         $validator = Validator::make(config('ioi-city-mall-sales-file'), [
             'disk_to_use' => ['required'],
             'sftp' => ['required'],
-            'sftp.ip_address' => ['required', 'ip'],
+            'sftp.ip_address' => ['required'],
             'sftp.port' => ['required'],
             'sftp.username' => ['required'],
             'sftp.password' => ['required'],
@@ -161,7 +161,7 @@ class SalesFileUploadCommand extends Command
         ], [
             'disk_to_use.required' => 'The disk_to_use key in configuration file is not set. Please ensure it is properly configured.',
             'sftp' => 'SFTP Config array is required.',
-            'sftp.ip_address' => 'SFTP Config array must have a valid IP Address as host.',
+            'sftp.ip_address' => 'SFTP Config IP address/host is required.',
             'sftp.port' => 'SFTP Config array must have a Port Configured Properly.',
             'sftp.username' => 'SFTP Config array must have a valid username.',
             'sftp.password' => 'SFTP Config array must have a valid password.',

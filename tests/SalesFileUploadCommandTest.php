@@ -81,7 +81,7 @@ describe('Configuration Checks with Notifications', function () {
         expect(Artisan::output())->toContain($sftpVarMessage);
 
     })->with([
-        'IP Address' => ['ip_address', 'SFTP Config array must have a valid IP Address as host.'],
+        'IP Address' => ['ip_address', 'SFTP Config IP address/host is required.'],
         'Port' => ['port', 'SFTP Config array must have a Port Configured Properly.'],
         'Username' => ['username', 'SFTP Config array must have a valid username.'],
         'Password' => ['password', 'SFTP Config array must have a valid password.'],

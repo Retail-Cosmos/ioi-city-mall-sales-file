@@ -34,7 +34,7 @@ return [
     |
     */
     'sftp' => [
-        'ip_address' => env('IOI_CITY_MALL_SFTP_IP_ADDRESS'), // SFTP server IP address
+        'ip_address' => env('IOI_CITY_MALL_SFTP_IP_ADDRESS'), // SFTP server IP address or host
         'port' => env('IOI_CITY_MALL_SFTP_PORT'), // SFTP server port
         'username' => env('IOI_CITY_MALL_SFTP_USERNAME'), // SFTP username
         'password' => env('IOI_CITY_MALL_SFTP_PASSWORD'), // SFTP password
