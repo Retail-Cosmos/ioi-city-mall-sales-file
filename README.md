@@ -43,6 +43,11 @@ $schedule->command('generate:ioi-city-mall-sales-files')->daily();
 >    - `date` - Date in the YYYY-MM-DD format to generate a sales file for a specific date.
 >    - `store_identifier` - To generate a sales file for a specific store only.
 
+Example:
+```bash
+php artisan generate:ioi-city-mall-sales-files --date=2024-11-31 --store_identifier=store1
+```
+
 2. Create a new class `IOICityMallSalesDataService` in the `App/Services` namespace and add a `storesList()` method in it. It should return the collection of stores. The keys need to be:
     - `store_identifier` (String)
     - `machine_id` (String. Machine ID as received from the IOI City Mall)
