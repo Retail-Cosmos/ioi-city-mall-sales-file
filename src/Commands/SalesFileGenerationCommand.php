@@ -22,7 +22,7 @@ class SalesFileGenerationCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'generate:ioi-city-mall-sales-files {date?} {--store_identifier=}';
+    protected $signature = 'generate:ioi-city-mall-sales-files {--date= : Date in Y-m-d format. Defaults to previous day.} {--store_identifier=}';
 
     /**
      * The console command description.
