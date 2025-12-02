@@ -159,7 +159,7 @@ class SalesFileGenerationCommand extends Command
 
         $storeIdentifier = $this->option('store_identifier');
 
-        $stores = $salesDataService->storesList($storeIdentifier);
+        $stores = $salesDataService->storesList($storeIdentifier); // @phpstan-ignore-line
 
         if (! isset($stores)) {
             throw new Exception('The stores array is either missing or empty. Please ensure it has proper values.');
@@ -216,7 +216,7 @@ class SalesFileGenerationCommand extends Command
         $salesDataService = resolve(IOICityMallSalesDataService::class); // @phpstan-ignore-line
 
         $stores->each(function ($store) use ($config, $date, $salesDataService) {
-            $salesData = $salesDataService->salesData($store['store_identifier'], $date);
+            $salesData = $salesDataService->salesData($store['store_identifier'], $date); // @phpstan-ignore-line
 
             if (! $salesData instanceof Collection) {
                 throw new Exception('A collection must be returned from the handle() method of the class.');
@@ -267,10 +267,20 @@ class SalesFileGenerationCommand extends Command
 
         $validator->after(function () use ($sales, $config) {
             $sales->each(function ($sale, $index) use ($config) {
-                if (isset($sale['payments']) && array_sum($sale['payments']) != $sale['net_amount']) {
-                    $sumOfPayments = array_sum($sale['payments']);
-                    Log::channel($config['log_channel_for_file_upload'])
-                        ->info("The sum of {$index}.payments ({$sumOfPayments}) must be equal to the {$index}.net_amount ({$sale['net_amount']}).");
+                if (isset($sale['payments']) && is_array($sale['payments'])) {
+                    // Check if all payment values are numeric before summing
+                    $paymentValues = array_values($sale['payments']);
+                    $allNumeric = array_reduce($paymentValues, function ($carry, $value) {
+                        return $carry && is_numeric($value);
+                    }, true);
+
+                    if ($allNumeric) {
+                        $sumOfPayments = array_sum($sale['payments']);
+                        if ($sumOfPayments != $sale['net_amount']) {
+                            Log::channel($config['log_channel_for_file_upload'])
+                                ->info("The sum of {$index}.payments ({$sumOfPayments}) must be equal to the {$index}.net_amount ({$sale['net_amount']}).");
+                        }
+                    }
                 }
             });
         });

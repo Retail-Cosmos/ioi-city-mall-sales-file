@@ -58,7 +58,9 @@ class SalesFileService
     {
         $fileContent = '';
 
-        $batchId = $date->diffInDays(Carbon::parse($config['first_file_generation_date'])) + 1;
+        // Calculate batch ID - compatible with both Carbon 2.x (Laravel 10) and Carbon 3.x (Laravel 11)
+        $startDate = Carbon::parse($config['first_file_generation_date']);
+        $batchId = abs($date->diffInDays($startDate)) + 1;
 
         $groupedSales->each(function ($sales, $hour) use (&$fileContent, $date, $store, $batchId) {
 
